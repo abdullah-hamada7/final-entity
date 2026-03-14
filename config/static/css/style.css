@@ -19,6 +19,7 @@
     --very-light-blue: #f0f9ff;
     --border-color: #e2e8f0;
     --hover-color: #0284c7;
+    --navbar-height: 80px;
 }
 
 body {
@@ -35,8 +36,12 @@ body {
     padding: 0;
 }
 
-body {
-    padding-top: 0 !important;
+.site-content {
+    padding-top: var(--navbar-height);
+}
+
+.site-content>*:first-child {
+    margin-top: 0 !important;
 }
 
 .about-page {
@@ -57,31 +62,19 @@ body {
 .navbar {
     background-color: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    padding: 1rem 0;
+    padding: 0;
     position: fixed;
     width: 100%;
-    top: 0 !important;
+    top: 0;
     left: 0;
     z-index: 1000;
-}
-
-.navbar::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: calc(-1 * constant(safe-area-inset-top));
-    top: calc(-1 * env(safe-area-inset-top, 0px));
-    height: constant(safe-area-inset-top);
-    height: env(safe-area-inset-top, 0px);
-    background: inherit;
-    pointer-events: none;
 }
 
 .navbar .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    min-height: var(--navbar-height);
 }
 
 .logo {
@@ -1946,12 +1939,15 @@ footer::before {
 }
 
 @media (max-width: 768px) {
+    :root {
+        --navbar-height: 64px;
+    }
+
     .navbar {
         padding: 0;
     }
 
     .navbar .container {
-        min-height: 56px;
         position: relative;
     }
 
