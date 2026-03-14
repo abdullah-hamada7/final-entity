@@ -3,7 +3,7 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>العروض</title>
     <link
       rel="stylesheet"
@@ -36,6 +36,7 @@
         --brand-900: #081125;
         --brand-800: #0b1731;
         --brand-700: #0f2145;
+        --navbar-height: 72px;
       }
 
       * {
@@ -51,6 +52,7 @@
         line-height: 1.6;
         overflow-x: hidden;
         min-height: 100vh;
+        padding-top: var(--navbar-height);
       }
 
       body.menu-open {
@@ -64,27 +66,29 @@
       }
 
       .navbar {
-        background: rgba(255, 255, 255, 0.86);
+        background: #ffffff;
         border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        padding: 1rem 0;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        padding: 0;
         position: fixed;
         width: 100%;
         top: 0;
+        left: 0;
         z-index: 1000;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
       }
 
       .navbar.scrolled {
         box-shadow: 0 18px 55px rgba(15, 23, 42, 0.14);
-        background: rgba(255, 255, 255, 0.92);
+        background: #ffffff;
       }
 
       .navbar .container {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        min-height: var(--navbar-height);
       }
 
       .nav-links {
@@ -137,8 +141,8 @@
       }
 
       .logo img {
-        height: 60px;
-        width: 60px;
+        height: 52px;
+        width: 52px;
         border-radius: 50%;
         object-fit: cover;
         border: 3px solid white;
@@ -1311,6 +1315,10 @@
       }
 
       @media (max-width: 768px) {
+        :root {
+          --navbar-height: 56px;
+        }
+
         .hamburger {
           display: flex;
         }
@@ -1328,12 +1336,12 @@
         }
 
         .navbar {
-          padding: 0.8rem 0;
+          padding: 0;
         }
 
         .logo img {
-          height: 50px;
-          width: 50px;
+          height: 40px;
+          width: 40px;
         }
 
         .footer-top {
@@ -1432,7 +1440,7 @@
       }
       <style>
         .offer-detail-section {
-            margin-top: 80px;
+            margin-top: 0;
             padding: 4rem 0;
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             min-height: 100vh;
@@ -1996,8 +2004,8 @@
 
             /* Logo adjustment */
             .logo img {
-                height: 50px;
-                width: 50px;
+                height: 40px;
+                width: 40px;
             }
 
             /* Prevent body scroll when menu is open */
@@ -2039,7 +2047,7 @@
         /* Safe area for notched devices */
         @supports (padding-top: env(safe-area-inset-top)) {
             .navbar {
-                padding-top: env(safe-area-inset-top);
+                padding-top: 0;
             }
 
             .nav-links {
