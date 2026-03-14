@@ -1,0 +1,642 @@
+/* ===================================
+   RESPONSIVE STYLES
+   =================================== */
+
+/* Prevent horizontal scroll on mobile */
+body.menu-open {
+    overflow: hidden;
+}
+
+/* ===================================
+   HAMBURGER MENU
+   =================================== */
+
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 12px;
+    /* Increased hit area */
+    z-index: 1100;
+    /* Extremely high to stay above everything */
+    pointer-events: auto !important;
+    transition: all 0.3s ease;
+}
+
+.hamburger span {
+    display: block;
+    width: 28px;
+    height: 3px;
+    background: var(--secondary-color);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(8px, 8px);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(8px, -8px);
+}
+
+/* ===================================
+   MOBILE MENU OVERLAY
+   =================================== */
+
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 1001;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    /* Prevent blocking clicks when invisible */
+    transition: all 0.3s ease;
+}
+
+.mobile-menu.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+}
+
+/* Close button hidden as per request */
+.close-menu {
+    display: none !important;
+}
+
+.mobile-menu-content {
+    position: fixed;
+    top: 0;
+    left: -320px;
+    width: 300px;
+    max-width: 85vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+    /* Light Blue Theme */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 4px 0 30px rgba(0, 0, 0, 0.4);
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    overflow-y: auto;
+    overflow-x: visible;
+    /* Allow cart badge to pop out */
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1002;
+    border-right: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.mobile-menu.active .mobile-menu-content {
+    left: 0;
+}
+
+/* Links Styling - Light Theme Update */
+.mobile-menu-content a {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1rem 1.2rem;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    color: #1B2848;
+    /* Dark Text */
+    text-decoration: none;
+    font-size: 1.05rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-menu-content a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(27, 155, 216, 0.1), transparent);
+    transition: width 0.3s ease;
+}
+
+.mobile-menu-content a:hover {
+    background: white;
+    border-color: #1B9BD8;
+    color: #1B9BD8;
+    transform: translateX(5px);
+    box-shadow: 0 8px 15px rgba(27, 155, 216, 0.15);
+}
+
+.mobile-menu-content a:hover::before {
+    width: 100%;
+}
+
+.mobile-menu-content a i {
+    font-size: 1.4rem;
+    color: #1B9BD8;
+    transition: all 0.3s ease;
+    min-width: 28px;
+    text-align: center;
+}
+
+.mobile-menu-content a:hover i {
+    color: #eab308;
+    /* Darker Gold */
+    transform: scale(1.1);
+}
+
+.mobile-menu-content a.active {
+    background: #1B9BD8;
+    border-color: #1B9BD8;
+    color: white;
+}
+
+.mobile-menu-content a.active i {
+    color: white;
+}
+
+/* Social Icons Styling - Dark Icons for Light Theme */
+.mobile-social {
+    display: flex;
+    justify-content: center;
+    gap: 1.2rem;
+    margin-top: auto;
+    padding-top: 2rem;
+    padding-bottom: 1rem;
+    border-top: 1px solid rgba(27, 40, 72, 0.1);
+}
+
+.mobile-social a {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 50px !important;
+    height: 50px;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    background: white !important;
+    border: 1px solid rgba(27, 40, 72, 0.1) !important;
+    margin: 0 !important;
+    min-width: auto !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
+}
+
+.mobile-social a i {
+    font-size: 1.5rem !important;
+    margin: 0 !important;
+    color: #1B9BD8 !important;
+}
+
+.mobile-social a:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* WhatsApp Hover */
+.mobile-social a[href*="wa.me"]:hover {
+    background: #25D366 !important;
+    border-color: #25D366 !important;
+}
+
+/* Telegram Hover */
+.mobile-social a[href*="t.me"]:hover {
+    background: #0088cc !important;
+    border-color: #0088cc !important;
+}
+
+/* Facebook Hover */
+.mobile-social a[href*="facebook"]:hover {
+    background: #1877F2 !important;
+    border-color: #1877F2 !important;
+}
+
+.mobile-social a:hover i {
+    color: white !important;
+}
+
+/* Nesting Fixes */
+.mobile-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    width: 100%;
+}
+
+.mobile-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(27, 40, 72, 0.1);
+}
+
+/* Ensure buttons look good */
+.mobile-buttons .mobile-btn {
+    justify-content: center;
+    background: white;
+    color: #1B9BD8 !important;
+    border: 1px solid rgba(27, 155, 216, 0.3) !important;
+    font-weight: 700;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-buttons .mobile-btn:hover {
+    background: #1B2848 !important;
+    /* Dark Blue */
+    color: white !important;
+    border-color: #1B2848 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(27, 40, 72, 0.3);
+}
+
+.mobile-buttons .mobile-btn i {
+    color: inherit !important;
+}
+
+.mobile-buttons .mobile-btn:hover i {
+    color: white !important;
+}
+
+/* ==================================
+   RESPONSIVE BREAKPOINTS
+   ================================== */
+
+/* Desktop Styles by Default (or inherited from style.css) */
+/* Assuming .nav-links is displayed block/flex in style.css for desktops */
+
+.hamburger {
+    display: none;
+    /* Hidden on desktop by default */
+}
+
+/* Large Tablets & Small Desktops */
+@media (max-width: 1200px) {
+    .container {
+        max-width: 960px;
+    }
+
+    .hero h1 {
+        font-size: 3rem;
+    }
+
+    .features h2 {
+        font-size: 2.5rem;
+    }
+
+    /* Mobile Menu Cart Logo Style - Premium Upgrade */
+    .mobile-menu .mobile-cart-container {
+        display: flex;
+        justify-content: center;
+        margin: 2rem 0;
+        width: 100%;
+        order: -1;
+        position: relative;
+    }
+
+    .mobile-menu .mobile-cart-container::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    }
+
+    .mobile-menu .mobile-cart-icon {
+        font-size: 1.8rem !important;
+        color: #fff !important;
+        position: relative;
+        display: inline-flex !important;
+        justify-content: center;
+        align-items: center;
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 215, 0, 0.3);
+        border-radius: 50%;
+        text-decoration: none;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        z-index: 1005;
+        overflow: visible !important;
+        /* Force visible overflow */
+        transform-style: preserve-3d;
+        /* Help with stacking */
+    }
+
+    .mobile-menu .mobile-cart-icon::before {
+        display: none;
+    }
+
+    .mobile-menu .mobile-cart-icon .cart-count {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        font-size: 0.85rem;
+        font-weight: 800;
+        min-width: 28px;
+        height: 28px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        border: 2px solid #1B2848;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        transform: scale(1) translateZ(10px);
+        /* Lift above parent */
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 1010;
+        /* Highest z-index */
+    }
+
+    .mobile-menu .mobile-cart-icon:hover {
+        transform: translateY(-5px) scale(1.05);
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 215, 0, 0.2);
+        border-color: #FFD700;
+    }
+
+
+    .mobile-menu .mobile-cart-icon:hover .cart-count {
+        transform: scale(1.15);
+    }
+
+    .mobile-menu .mobile-cart-icon:active {
+        transform: scale(0.95);
+    }
+}
+
+/* Tablets and Mobile (Show Hamburger, Hide Nav Links) */
+@media (max-width: 768px) {
+    .hamburger {
+        display: flex !important;
+    }
+
+    .nav-links,
+    .navbar .nav-links {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+
+    .hero {
+        padding: 6rem 0 3rem;
+        min-height: 80vh;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+    }
+
+    /* =========================================
+       TABLET SPECIFIC CONTROL (769px - 992px)
+       Code here affects ONLY Tablets, not Mobile
+       ========================================= */
+    /* Tablet specific logo control removed to prevent conflict with index.css */
+
+    .features .cards-container {
+
+        .features .cards-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .shortcuts-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Large Phones */
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 1.5rem;
+        }
+
+        .navbar {
+            padding: 0.8rem 0;
+        }
+
+        .logo img {
+            height: 50px;
+            width: 50px;
+        }
+
+        .hero {
+            padding: 5rem 0 2rem;
+            min-height: 70vh;
+        }
+
+        .hero h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Phone Specific Logo Styles (Separate from Tablet) */
+        .hero #title .special-i {
+            transform: scaleX(2) !important;
+            margin-left: 0.2em !important;
+            margin-right: 0.12em !important;
+        }
+
+        .hero #title .special-i::before,
+        .hero #title .special-i::after {
+            left: calc(50% - 0.04em) !important;
+            transform: translateX(-50%) !important;
+        }
+
+        .cta-button {
+            padding: 0.9rem 1.8rem;
+            font-size: 1rem;
+        }
+
+        .features {
+            padding: 4rem 0;
+        }
+
+        .features h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .features .cards-container {
+            grid-template-columns: 1fr;
+            gap: 1.2rem;
+        }
+
+        .feature-card {
+            padding: 1.8rem 1.2rem;
+        }
+
+        .shortcuts {
+            padding: 4rem 0;
+        }
+
+        .shortcuts h2 {
+            font-size: 2rem;
+        }
+
+        .shortcuts-grid {
+            gap: 1.5rem;
+        }
+
+        .footer-top {
+            grid-template-columns: 1fr 1fr !important;
+            gap: 2rem 1rem !important;
+        }
+
+        .footer-col {
+            text-align: center;
+        }
+
+        .footer-brand {
+            grid-column: 1 / -1;
+            text-align: center;
+        }
+
+        .footer-col:last-child {
+            grid-column: 1 / -1;
+        }
+
+        .footer-social {
+            justify-content: center;
+        }
+
+        .footer-contact {
+            align-items: center;
+        }
+
+        .footer-links {
+            align-items: center;
+        }
+    }
+
+    /* Medium Phones */
+    @media (max-width: 576px) {
+        .hero h1 {
+            font-size: 1.8rem;
+        }
+
+        .features h2,
+        .shortcuts h2 {
+            font-size: 1.7rem;
+        }
+    }
+
+    /* Small Phones */
+    @media (max-width: 480px) {
+        .container {
+            padding: 0 1rem;
+        }
+
+        .logo img {
+            height: 45px;
+            width: 45px;
+        }
+
+        .hero h1 {
+            font-size: 1.6rem;
+        }
+
+        .hero p {
+            font-size: 0.95rem;
+        }
+
+        .cta-button {
+            padding: 0.8rem 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .features h2,
+        .shortcuts h2 {
+            font-size: 1.5rem;
+        }
+
+        .feature-card i {
+            font-size: 2.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+        }
+
+        .footer-badge {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+        }
+    }
+
+    /* Extra Small Phones */
+    @media (max-width: 375px) {
+        .hero h1 {
+            font-size: 1.4rem;
+        }
+
+        .features h2,
+        .shortcuts h2 {
+            font-size: 1.3rem;
+        }
+
+        .mobile-menu-content a {
+            min-width: 180px;
+            padding: 0.8rem 1.2rem;
+            font-size: 0.95rem;
+        }
+    }
+
+    /* Landscape Mode for Small Devices */
+    @media (max-height: 500px) and (orientation: landscape) {
+        .hero {
+            min-height: auto;
+            padding: 4rem 0 2rem;
+        }
+
+        .mobile-menu-content {
+            gap: 0.5rem;
+            padding: 1rem;
+        }
+
+        .mobile-menu-content a {
+            padding: 0.6rem 1.5rem;
+            font-size: 0.9rem;
+            min-width: 200px;
+        }
+    }
+}

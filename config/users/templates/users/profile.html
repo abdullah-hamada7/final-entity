@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ملفي الشخصي - Entity Medical{% endblock %}
+
+{% block content %}
+
+<main class="auth-section profile-section">
+    <div class="container">
+        <!-- Header -->
+        <div class="profile-header-premium">
+            <div class="user-welcome">
+                <h1>مرحباً، <span id="pNameHeader">{{ request.user.full_name }}</span></h1>
+                <p class="premium-badge"><i class="fas fa-crown"></i> عضو مميز</p>
+            </div>
+            <form method="POST" action="{% url 'users:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn-premium">
+                    <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                </button>
+            </form>
+        </div>
+
+        <div class="profile-dashboard-grid">
+            <!-- Info Column -->
+            <div class="profile-sidebar">
+                <div class="member-card">
+                    <div class="card-chip"></div>
+                    <div class="card-info">
+                        <label>الاسم الكامل</label>
+                        <h3 id="pNameCard">{{ request.user.full_name }}</h3>
+                    </div>
+                    <div class="card-details">
+                        <div>
+                            <label>رقم الهاتف</label>
+                            <span id="pPhoneCard">{{ request.user.phone }}</span>
+                        </div>
+                        <div>
+                            <label>تاريخ الانضمام</label>
+                            <span id="pCreatedCard">{{ request.user.date_joined|date:"Y-m-d" }}</span>
+                        </div>
+                    </div>
+                    <div class="card-logo">ENTITY VIP</div>
+                </div>
+
+                <div class="profile-menu">
+                    <button class="menu-item active" onclick="switchTab('orders')">
+                        <i class="fas fa-box-open"></i> طلباتي
+                    </button>
+                    <button class="menu-item" onclick="switchTab('settings')">
+                        <i class="fas fa-user-cog"></i> إعدادات الحساب
+                    </button>
+                    <button class="menu-item" onclick="switchTab('support')">
+                        <i class="fas fa-headset"></i> الدعم الفني
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Column -->
+            <div class="profile-content">
+
+                <!-- Stats Row -->
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="icon"><i class="fas fa-shopping-bag"></i></div>
+                        <div class="info">
+                            <h3 id="statOrders">0</h3>
+                            <p>طلب حالي</p>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="icon"><i class="fas fa-heart"></i></div>
+                        <div class="info">
+                            <h3 id="statFavs">0</h3>
+                            <p>المفضلة</p>
+                        </div>
+                    </div>
+                    <div class="stat-box gold">
+                        <div class="icon"><i class="fas fa-crown"></i></div>
+                        <div class="info">
+                            <h3 id="statPremium">Premium</h3>
+                            <p>نوع العضوية</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Orders -->
+                <div id="tab-orders" class="tab-content active">
+                    <div class="content-box">
+                        <div class="box-header">
+                            <h2><i class="fas fa-history"></i> سجل الطلبات</h2>
+                        </div>
+                        <div class="empty-state">
+                            <i class="fas fa-box-open"></i>
+                            <p>لا توجد طلبات سابقة حتى الآن</p>
+                            <a href="{% url 'products:home' %}" class="auth-btn small">تصفح المنتجات</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Settings -->
+                <div id="tab-settings" class="tab-content">
+                    <div class="content-box">
+                        <div class="box-header">
+                            <h2><i class="fas fa-edit"></i> تعديل البيانات</h2>
+                        </div>
+                        <form id="profileForm" class="auth-form" method="POST" action="{% url 'users:profile' %}">
+                            {% csrf_token %}
+                            <div class="input-group">
+                                <label>الاسم الكامل</label>
+                                <input type="text" id="profileName" name="full_name" value="{{ request.user.full_name }}" required>
+                            </div>
+                            <div class="input-group">
+                                <label>البريد الإلكتروني (اختياري)</label>
+                                <input type="email" id="profileEmail" name="email" value="{{ request.user.email }}">
+                            </div>
+                            <div class="input-group">
+                                <label>كلمة المرور الجديدة (اختياري)</label>
+                                <input type="password" id="newPassword" name="new_password" placeholder="********">
+                            </div>
+                            <button type="submit" class="auth-btn">حفظ التغييرات</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Tab: Support -->
+                <div id="tab-support" class="tab-content">
+                    <div class="content-box">
+                        <div class="box-header">
+                            <h2><i class="fas fa-question-circle"></i> هل تحتاج مساعدة؟</h2>
+                        </div>
+                        <p>فريق الدعم متاح لمساعدتك في أي وقت.</p>
+                        <div class="action-buttons">
+                            <a href="https://wa.me/201013928114" target="_blank" class="whatsapp-btn">
+                                <i class="fab fa-whatsapp"></i> تواصل عبر واتساب
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+function switchTab(tabName) {
+    // Updated active menu item
+    document.querySelectorAll('.menu-item').forEach(btn => btn.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+
+    // Show tab content
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    document.getElementById('tab-' + tabName).classList.add('active');
+}
+</script>
+
+{% endblock %}

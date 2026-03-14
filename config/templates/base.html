@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+        content="Entity Medical يوفر أجهزة طبية وآلات جراحية وأجهزة رعاية مع دعم فني سريع وتواصل عبر واتساب. جودة عالية وأسعار تنافسية.">
+    <meta name="robots" content="index,follow">
+    <meta name="theme-color" content="#1b9bd8">
+    <meta property="og:locale" content="ar_EG">
+    <meta property="og:site_name" content="Entity Medical">
+    <meta property="og:title" content="Entity Medical | أجهزة طبية وآلات جراحية - تجهيز عيادات ومستشفيات">
+    <meta property="og:description"
+        content="Entity Medical يوفر أجهزة طبية وآلات جراحية وأجهزة رعاية مع دعم فني سريع وتواصل عبر واتساب. جودة عالية وأسعار تنافسية.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="{% static 'images/med-image.jpg' %}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Entity Medical | أجهزة طبية وآلات جراحية - تجهيز عيادات ومستشفيات">
+    <meta name="twitter:description"
+        content="Entity Medical يوفر أجهزة طبية وآلات جراحية وأجهزة رعاية مع دعم فني سريع وتواصل عبر واتساب. جودة عالية وأسعار تنافسية.">
+    <meta name="twitter:image" content="{% static 'images/med-image.jpg' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" sizes="any">
+    <link rel="apple-touch-icon" href="{% static 'icons/apple-touch-icon.png' %}">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <title>{% block title %}Entity Medical{% endblock %}| أجهزة طبية وآلات جراحية - تجهيز عيادات ومستشفيات</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/contact.css' %}">
+    <link rel="stylesheet" href="{% static 'css/offers.css' %}">
+    <link rel="stylesheet" href="{% static 'css/products.css' %}">
+    <link rel="stylesheet" href="{% static 'css/product-details.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <link rel="stylesheet" href="{% static 'css/about.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="{% static 'js/app.js' %}" defer></script>
+    <script src="{% static 'js/cart.js' %}" defer></script>
+
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "Entity Medical",
+          "logo": "{% static 'images/med-image.jpg' %}",
+          "contactPoint": [
+            {
+              "@type": "ContactPoint",
+              "telephone": "+20-101-392-8114",
+              "contactType": "customer support",
+              "areaServed": "EG",
+              "availableLanguage": ["ar", "en"]
+            }
+          ],
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Nasr City, Cairo",
+            "addressCountry": "EG"
+          }
+        }
+        </script>
+</head>
+
+<body data-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}">    <!-- القائمة العلوية -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="{% static 'images/med-image.jpg' %}" alt="Entity Medical Logo">
+            </div>
+
+            <!-- Hamburger Menu Button -->
+            <button class="hamburger" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <!-- القائمة الأصلية (للشاشات الكبيرة) -->
+            <ul class="nav-links">
+                <li><a href="/" {% if request.path == '/' %}class="active"{% endif %}>الرئيسية</a></li>
+                <li><a href="{% url 'products:home' %}" {% if 'products' in request.path %}class="active"{% endif %}>المنتجات</a></li>
+                <li><a href="{% url 'offers:list' %}" {% if 'offers' in request.path %}class="active"{% endif %}>العروض</a></li>
+                <li><a href="{% url 'about' %}" {% if request.path == '/about/' %}class="active"{% endif %}>حول</a></li>
+                <li><a href="{% url 'contact:contact' %}" {% if 'contact' in request.path %}class="active"{% endif %}>تواصل معنا</a></li>
+                
+                <li class="cart-icon-container">
+                    <a href="#" class="cart-icon" onclick="toggleCart()">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu">
+        <div class="mobile-menu-content">
+            <!-- روابط التنقل الأساسية -->
+            <a href="/" class="active">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </a>
+            <a href="{% url 'products:home' %}">
+                <i class="fas fa-box-open"></i>
+                <span>المنتجات</span>
+            </a>
+            <a href="{% url 'offers:list' %}">
+                <i class="fas fa-tags"></i>
+                <span>العروض</span>
+            </a>
+            <a href="{% url 'about' %}">
+                <i class="fas fa-circle-info"></i>
+                <span>حول</span>
+            </a>
+            <a href="{% url 'contact:contact' %}">
+                <i class="fas fa-message"></i>
+                <span>تواصل معنا</span>
+            </a>
+            <div class="mobile-cart-container">
+                <a href="#" class="mobile-cart-icon" onclick="toggleCart()">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+            </div>
+
+            <div class="menu-separator" style="height: 1px; background: rgba(255,255,255,0.1); margin: 0.5rem 0;"></div>
+
+            <!-- أزرار الحساب -->
+            {% if user.is_authenticated %}
+            <a href="{% url 'users:profile' %}" {% if 'profile' in request.path %}class="active"{% endif %}>
+                <i class="fas fa-user-circle"></i>
+                <span>الملف الشخصي</span>
+            </a>
+            <a href="{% url 'users:logout' %}">
+                <i class="fas fa-user-circle"></i>
+                <span>تسجيل الخروج </span>
+            </a>
+            {% else %}
+
+            <a href="{% url 'users:login' %}">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>تسجيل الدخول</span>
+            </a>
+            <a href="{% url 'users:register' %}">
+                <i class="fas fa-user-plus"></i>
+                <span>إنشاء حساب</span>
+            </a>
+            {% endif %}
+            <div class="menu-separator" style="height: 1px; background: rgba(255,255,255,0.1); margin: 0.5rem 0;"></div>
+
+            <!-- روابط التواصل -->
+            <div class="mobile-social">
+                <a href="https://wa.me/201013928114" target="_blank">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+                <a href="https://t.me/+201013928114" target="_blank">
+                    <i class="fab fa-telegram"></i>
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=100064583177086" target="_blank">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% block content %} 
+    
+    {% endblock %}
+
+
+    <!-- تذييل الصفحة -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <img src="{% static 'images/med-image.jpg' %}" alt="Entity Medical Logo">
+                        <div class="footer-brand-title">
+                            <strong>Entity Medical</strong>
+                            <span>الأجهزة الطبية</span>
+                        </div>
+                    </div>
+                    <p class="footer-desc">نوفر أجهزة مختارة بعناية، مع دعم سريع وخدمة منظمة تساعدك تختار
+                        المنتج المناسب بثقة.</p>
+                    <div class="footer-badges">
+                        <span class="footer-badge"><i class="fas fa-circle-check"></i> جودة مضمونة</span>
+                        <span class="footer-badge"><i class="fas fa-headset"></i> دعم سريع</span>
+                        <span class="footer-badge"><i class="fas fa-truck-fast"></i> توصيل داخل مصر</span>
+                    </div>
+
+                    <div class="footer-social" aria-label="Social links">
+                        <a href="https://wa.me/201013928114" target="_blank" rel="noopener" title="WhatsApp"><i
+                                class="fab fa-whatsapp"></i></a>
+                        <a href="https://t.me/+201013928114" target="_blank" rel="noopener" title="Telegram"><i
+                                class="fab fa-telegram"></i></a>
+                        <a href="https://www.facebook.com/profile.php?id=100064583177086" target="_blank" rel="noopener"
+                            title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/moelshekh?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                            target="_blank" rel="noopener" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>روابط سريعة</h4>
+                    <ul class="footer-links">
+                        <li><a href="/"><i class="fas fa-house"></i> الرئيسية</a></li>
+                        <li><a href="{% url 'products:home' %}"><i class="fas fa-box-open"></i> المنتجات</a></li>
+                        <li><a href="{% url 'offers:list' %}"><i class="fas fa-tags"></i> العروض</a></li>
+                        <li><a href="{% url 'about' %}"><i class="fas fa-circle-info"></i> حول</a></li>
+                        <li><a href="{% url 'contact:contact' %}"><i class="fas fa-message"></i> تواصل معنا</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>الأقسام</h4>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'products:home' %}"><i class="fas fa-stethoscope"></i> أجهزة طبية</a></li>
+                        <li><a href="{% url 'products:home' %}"><i class="fas fa-user-doctor"></i> آلات جراحية</a></li>
+                        <li><a href="{% url 'products:home' %}"><i class="fas fa-heart-pulse"></i> أجهزة العناية</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>تواصل</h4>
+                    <div class="footer-contact">
+                        <a href="{% url 'contact:contact' %}"><i class="fas fa-location-dot"></i> Nasr City, Cairo</a>
+                        <a href="tel:+201013928114">
+                            <i class="fas fa-phone"></i>
+                            <span style="direction:ltr; unicode-bidi:bidi-override;">+20 101 392 8114</span>
+                        </a>
+                        <a href="mailto:entityeg21@gmail.com"><i class="fas fa-envelope"></i> entityeg21@gmail.com</a>
+                    </div>
+                    <div class="footer-cta">
+                        <a class="footer-btn" href="https://wa.me/201013928114" target="_blank" rel="noopener"><i
+                                class="fab fa-whatsapp"></i> اطلب عبر واتساب</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom-new">
+            <div class="container footer-bottom-inner">
+                <div>© <span class="js-year"></span> Entity Medical — جميع الحقوق محفوظة<span> — </span>
+                    <a href="https://www.facebook.com/profile.php?id=61585319803545" target="_blank" rel="noopener"
+                        style="color:inherit;text-decoration:none;">
+                        <img src="{% static 'images/wolf-logo.png' %}" alt="Wolf Digital Growth" style="width: 40px; vertical-align: middle;">
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </footer>
+
+    <!-- Shopping Cart Modal -->
+    <div id="cartModal" class="cart-modal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h2>عربة المشتريات</h2>
+                <button class="close-cart" onclick="toggleCart()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="cart-body">
+                <div id="cartItems" class="cart-items">
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>عربة المشتريات فارغة</p>
+                    </div>
+                </div>
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>المجموع: <span id="cartTotal">0 جنيه</span></span>
+                </div>
+                <div class="cart-actions">
+                    <button class="btn-clear" onclick="clearCart()">مسح العربة</button>
+                    <button class="btn-checkout" onclick="checkout()">إتمام الطلب</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

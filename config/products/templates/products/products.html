@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}حول - Entity Medical{% endblock %}
+
+{% block content %}
+<style>
+    .search-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    
+        padding: 10px 22px;
+        font-size: 14px;
+        font-weight: 500;
+    
+        color: #374151; /* رمادي غامق */
+        background-color: #ffffff;
+    
+        border: 1px solid #d1d5db;
+        border-radius: 999px; /* بيضاوي */
+    
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+    
+    .search-btn i {
+        font-size: 13px;
+        color: #6b7280;
+    }
+    
+    .search-btn:hover {
+        background-color: #f9fafb;
+        border-color: #9ca3af;
+    }
+    
+    .search-btn:active {
+        background-color: #f3f4f6;
+    } 
+
+</style>
+
+    <!-- قسم المنتجات -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <section class="products-section">
+        <div class="products-container">
+            <h1 class="section-title">منتجاتنا الطبية</h1>
+            
+            <form method="GET" action="{% url 'products:home' %}" class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input 
+                    type="search" 
+                    name="search" 
+                    id="searchInput" 
+                    placeholder="ابحث عن المنتجات..." 
+                    value="{{ search_query }}"
+                    autocomplete="off"
+                    enterkeyhint="search"
+                >
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i>
+                    بحث
+                </button>
+            </form>
+            
+            {% if search_query %}
+            <div style="text-align: center; margin-bottom: 2rem; padding: 1rem; background: rgba(27, 155, 216, 0.1); border-radius: 15px;">
+                <p style="color: var(--secondary-color); font-size: 1.2rem; font-weight: 600; margin: 0;">
+                    نتائج البحث عن: "{{ search_query }}"
+                    <a href="{% url 'products:home' %}" style="color: #dc3545; text-decoration: none; margin-right: 1rem;">
+                        <i class="fas fa-times-circle"></i> إلغاء البحث
+                    </a>
+                </p>
+            </div>
+            {% endif %}
+
+            {% if products %}
+            <div class="offers-grid">
+                {% for product in products %}
+                <div class="offer-card">
+                    {% if product.discount_percentage > 0 %}
+                    <div class="offer-badge">خصم {{ product.discount_percentage }}%</div>
+                    {% endif %}
+                    
+                    <div class="offer-image">
+                        {% with primary_img=product.images.all|first %}
+                            {% if primary_img %}
+                                <img src="{{ primary_img.image.url }}" alt="{{ product.name }}">
+                            {% elif product.brand.logo %}
+                                <img src="{{ product.brand.logo.url }}" alt="{{ product.brand.name }}">
+                            {% else %}
+                                <i class="{{ product.icon }}"></i>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+    
+                    <div class="offer-content">
+                        <h3>{{ product.name }}</h3>
+                        <p>{{ product.description|truncatewords:20 }}</p>
+    
+                        <div class="offer-features">
+                            <span><i class="fas fa-tag"></i> {{ product.category.name }}</span>
+                            {% if product.brand %}
+                                <span><i class="fas fa-building"></i> {{ product.brand.name }}</span>
+                            {% endif %}
+                            {% if product.stock > 0 %}
+                                <span><i class="fas fa-check-circle"></i> متوفر</span>
+                            {% else %}
+                                <span style="background: rgba(255,0,0,0.1); color: #dc3545;"><i class="fas fa-times-circle"></i> غير متوفر</span>
+                            {% endif %}
+                        </div>
+    
+                        {% if product.discount_percentage > 0 %}
+                            <div style="margin:15px 0;">
+                                <span style="text-decoration:line-through; color:#999; font-size:1rem;">{{ product.price|floatformat:0 }} جنيه</span>
+                                <span style="color:#28a745; font-weight:800; font-size:1.4rem; display:block; margin-top:5px;">{{ product.final_price|floatformat:0 }} جنيه</span>
+                            </div>
+                        {% else %}
+                            <div class="product-price">{{ product.price|floatformat:0 }} جنيه</div>
+                        {% endif %}
+    
+                        <button class="offer-btn" onclick="window.location.href='{% url 'products:detail' slug=product.slug %}'">
+                            <i class="fas fa-arrow-left"></i>
+                            عرض التفاصيل
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 4rem 0;">
+                <i class="fas fa-box-open" style="font-size: 5rem; color: var(--secondary-color); opacity: 0.3; margin-bottom: 1rem;"></i>
+                <p style="font-size: 1.5rem; color: var(--text-color);">
+                    {% if search_query %}
+                        لا توجد نتائج للبحث "{{ search_query }}"
+                    {% else %}
+                        لا توجد منتجات متاحة حالياً
+                    {% endif %}
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}
+</html>

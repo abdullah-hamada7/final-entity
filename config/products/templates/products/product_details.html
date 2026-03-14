@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} | Entity Medical{% endblock %}
+
+{% block content %}
+
+<section class="product-details-section">
+    <div class="product-details-container">
+
+        <a href="{% url 'products:home' %}" class="back-link">
+            <i class="fas fa-arrow-right"></i>
+            العودة إلى المنتجات
+        </a>
+
+        <div class="product-details-grid">
+
+            <!-- صور المنتج -->
+            <div class="product-images">
+
+                <div class="main-image">
+                    {% if product.images.all.first %}
+                        <img id="mainImage"
+                             src="{{ product.images.all.first.image.url }}"
+                             alt="{{ product.name }}">
+                    {% elif product.image %}
+                        <img id="mainImage"
+                             src="{{ product.image.url }}"
+                             alt="{{ product.name }}">
+                    {% else %}
+                        <i class="fas fa-box"></i>
+                    {% endif %}
+                </div>
+
+                {% if product.images.exists %}
+                <div class="thumbnail-controls">
+                    <span class="thumbnail-count">
+                        {{ product.images.count }} صور
+                    </span>
+                </div>
+
+                <div class="thumbnail-grid" id="thumbnailGrid">
+                    {% for image in product.images.all %}
+                    <div class="thumbnail {% if forloop.first %}active{% endif %}"
+                         onclick="changeImage('{{ image.image.url }}', this)">
+                        <img src="{{ image.image.url }}" alt="{{ product.name }}">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+            </div>
+
+            <!-- بيانات المنتج -->
+            <div class="product-info">
+
+                <h1 class="product-title">{{ product.name }}</h1>
+
+                {% if product.brand %}
+                <div class="product-brand">
+                    <span>الشركة المصنعة:</span>
+                    <span class="brand-name">{{ product.brand.name }}</span>
+                </div>
+                {% endif %}
+
+                <div class="product-price">
+                    {% if product.discount_percentage > 0 %}
+                        <span class="old-price">
+                            {{ product.price|floatformat:0 }} جنيه
+                        </span>
+                        <span class="price">
+                            {{ product.final_price|floatformat:0 }} جنيه
+                        </span>
+                        <span class="discount-badge">
+                            خصم {{ product.discount_percentage|floatformat:0 }}%
+                        </span>
+                    {% else %}
+                        <span class="price">
+                            {{ product.price|floatformat:0 }} جنيه
+                        </span>
+                    {% endif %}
+                </div>
+
+                {% if product.description %}
+                <div class="product-description">
+                    <h3>وصف المنتج</h3>
+                    <p>{{ product.description }}</p>
+                </div>
+                {% endif %}
+
+                {% if product.features.exists %}
+                <div class="product-features">
+                    <div class="product-features">
+                    <h3>المميزات الرئيسية</h3>
+                    <ul class="features-list">
+                        {% for feature in product.features.all %}
+                        <li style="color:#000; font-size:16px;">
+                            <i class="fas fa-check"></i>
+                            {{ feature }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <div class="product-actions">
+                    <a href="{% url 'contact:contact' %}" class="order-button">
+                        <i class="fas fa-shopping-cart"></i>
+                        طلب المنتج
+                    </a>
+
+                    <a href="{% url 'contact:contact' %}" class="contact-button">
+                        <i class="fas fa-phone"></i>
+                        استفسار سريع
+                    </a>
+
+                    <button class="add-to-cart-btn"
+                            onclick="addToCart('{{ product.name }}', {{ product.price }}, {{ product.id }})">
+                        <i class="fas fa-cart-plus"></i>
+                        أضف إلى السلة
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</section>
+<script>
+    function changeImage(imageUrl, element) {
+        // تغيير الصورة الرئيسية
+        const mainImage = document.getElementById('mainImage');
+        mainImage.src = imageUrl;
+    
+        // إزالة active من كل الصور
+        document.querySelectorAll('.thumbnail').forEach(thumb => {
+            thumb.classList.remove('active');
+        });
+    
+        // إضافة active للصورة المختارة
+        element.classList.add('active');
+    }
+    </script>
+{% endblock %}

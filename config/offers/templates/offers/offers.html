@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}العروض - Entity Medical{% endblock %}
+
+{% block content %}
+<section class="offers-section">
+    <div class="offers-container">
+
+        <a href="{% url 'home' %}" class="back-link">
+            <i class="fas fa-arrow-right"></i>
+            العودة إلى الرئيسية
+        </a>
+
+        <h1 class="section-title">أحدث العروض</h1>
+
+        {% if offers %}
+        <div class="offers-grid">
+            {% for offer in offers %}
+            <div class="offer-card">
+
+                <!-- Badge -->
+                <div class="offer-badge">
+                    {% if offer.offer_type == "percentage" %}
+                        خصم {{ offer.discount_value }}%
+                    {% else %}
+                        خصم {{ offer.discount_value }} جنيه
+                    {% endif %}
+                </div>
+
+                <!-- Image -->
+                <div class="offer-image">
+                    {% if offer.image %}
+                        <img src="{{ offer.image.url }}" alt="{{ offer.title }}" class="offer-img">
+                    {% else %}
+                        <i class="fas fa-tags"></i>
+                        <!-- أو صورة افتراضية -->
+                        <!-- <img src="{% static 'images/default-offer.jpg' %}" alt="عرض افتراضي"> -->
+                    {% endif %}
+                </div>
+
+                <!-- Content -->
+                <div class="offer-content">
+                    <h3>{{ offer.title }}</h3>
+                    <p>{{ offer.description|truncatewords:20 }}</p>
+
+                    <div class="offer-meta">
+                        <span>
+                            <i class="fas fa-box"></i>
+                            {{ offer.products.count }} منتج
+                        </span>
+                        <span>
+                            <i class="fas fa-calendar"></i>
+                            حتى {{ offer.end_date|date:"Y/m/d" }}
+                        </span>
+                    </div>
+
+                    <!-- Products preview -->
+                    {% if offer.products.exists %}
+                    <div class="products-list">
+                        {% for op in offer.products.all|slice:":4" %}
+                            <div class="product-mini">
+                                <strong>
+                                    {{ op.product.name|truncatewords:3 }}
+                                </strong>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {% if offer.products.count > 4 %}
+                        <p style="font-size: 0.9rem; color:#666;">
+                            + {{ offer.products.count|add:"-4" }} منتجات أخرى
+                        </p>
+                    {% endif %}
+                    {% endif %}
+
+                    <!-- Actions -->
+                    <div class="offer-actions">
+                        <a href="{% url 'offers:detail' offer.id %}" class="offer-details-btn">
+                            عرض التفاصيل <i class="fas fa-info-circle"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p style="text-align:center;">لا توجد عروض حالياً</p>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

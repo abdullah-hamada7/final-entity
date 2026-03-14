@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+        content="آلات جراحية عالية الدقة من الفولاذ المقاوم للصدأ. جميع الأدوات للجراحة العامة والتخصصية متوفرة الآن بأفضل الأسعار.">
+    <meta name="robots" content="index,follow">
+    <meta name="theme-color" content="#1b9bd8">
+    <meta property="og:locale" content="ar_EG">
+    <meta property="og:site_name" content="Entity Medical">
+    <meta property="og:title" content="الآلات الجراحية | Entity Medical - أدوات جراحية دقيقة">
+    <meta property="og:description"
+        content="آلات جراحية عالية الدقة من الفولاذ المقاوم للصدأ. جميع الأدوات للجراحة العامة والتخصصية متوفرة الآن بأفضل الأسعار.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="images/med-image.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="الآلات الجراحية | Entity Medical - أدوات جراحية دقيقة">
+    <meta name="twitter:description"
+        content="آلات جراحية عالية الدقة من الفولاذ المقاوم للصدأ. جميع الأدوات للجراحة العامة والتخصصية متوفرة الآن بأفضل الأسعار.">
+    <meta name="twitter:image" content="images/med-image.jpg">
+    <link rel="icon" href="images/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <title>الآلات الجراحية | Entity Medical - أدوات جراحية دقيقة</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="stylesheet" href="css/surgical-equipment.css">
+    <link rel="stylesheet" href="css/offers.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <script src="js/app.js" defer></script>
+    <script src="js/cart.js" defer></script>
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Entity Medical",
+  "logo": "images/med-image.jpg",
+  "contactPoint": [
+    {
+      "@type": "ContactPoint",
+      "telephone": "+20-101-392-8114",
+      "contactType": "customer support",
+      "areaServed": "EG",
+      "availableLanguage": [
+        "ar",
+        "en"
+      ]
+    }
+  ],
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Nasr City, Cairo",
+    "addressCountry": "EG"
+  }
+}
+    </script>
+</head>
+
+<body>
+    <!-- القائمة العلوية -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="images/med-image.jpg" alt="Entity Medical Logo">
+            </div>
+
+            <!-- Hamburger Menu Button -->
+            <button class="hamburger" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <!-- القائمة الأصلية (للشاشات الكبيرة) -->
+            <ul class="nav-links">
+                <li><a href="/">الرئيسية</a></li>
+                <li><a href="/products/" class="active">المنتجات</a></li>
+                <li><a href="/offers/">العروض</a></li>
+                <li><a href="/about/">حول</a></li>
+                <li><a href="/contact/">تواصل معنا</a></li>
+                <li class="cart-icon-container">
+                    <a href="#" class="cart-icon" onclick="toggleCart()">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu">
+        <div class="mobile-menu-content">
+            <!-- روابط التنقل الأساسية -->
+            <a href="/">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </a>
+            <a href="/products/" class="active">
+                <i class="fas fa-box-open"></i>
+                <span>المنتجات</span>
+            </a>
+            <a href="/offers/">
+                <i class="fas fa-tags"></i>
+                <span>العروض</span>
+            </a>
+            <a href="/about/">
+                <i class="fas fa-circle-info"></i>
+                <span>حول</span>
+            </a>
+            <a href="/contact/">
+                <i class="fas fa-message"></i>
+                <span>تواصل معنا</span>
+            </a>
+            <div class="mobile-cart-container">
+                <a href="#" class="mobile-cart-icon" onclick="toggleCart()">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+            </div>
+
+            <div class="menu-separator" style="height: 1px; background: rgba(255,255,255,0.1); margin: 0.5rem 0;"></div>
+
+            <!-- أزرار الحساب -->
+            <a href="/users/login/">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>تسجيل الدخول</span>
+            </a>
+            <a href="/users/register/">
+                <i class="fas fa-user-plus"></i>
+                <span>إنشاء حساب</span>
+            </a>
+            <a href="/users/profile/">
+                <i class="fas fa-user-circle"></i>
+                <span>الملف الشخصي</span>
+            </a>
+
+            <div class="menu-separator" style="height: 1px; background: rgba(255,255,255,0.1); margin: 0.5rem 0;"></div>
+
+            <!-- روابط التواصل -->
+            <div class="mobile-social">
+                <a href="https://wa.me/201013928114" target="_blank">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+                <a href="https://t.me/+201013928114" target="_blank">
+                    <i class="fab fa-telegram"></i>
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=100064583177086" target="_blank">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- قسم الآلات الجراحية -->
+    <section class="offers-section">
+        <div class="offers-container">
+            <a href="/products/" class="back-link">
+                <i class="fas fa-arrow-right"></i>
+                العودة إلى الأقسام
+            </a>
+
+            <h1 class="section-title">الآلات الجراحية</h1>
+
+            <div class="offers-grid">
+                <!-- طاولة العمليات -->
+                <div class="offer-card">
+                    <div class="offer-image">
+                        <img src="images/products/surgery-table.jpg" alt="طاولة العمليات"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <img src="images/med-image.jpg" alt="Entity Medical Logo" class="fallback-logo"
+                            style="display: none;">
+                        <i class="fas fa-bed" style="display: none;"></i>
+                    </div>
+                    <div class="offer-content">
+                        <h3>طاولة العمليات</h3>
+                        <p>طاولة عمليات متطورة قابلة للتعديل مع تقنيات حديثة</p>
+                        <div class="offer-price">
+                            <span class="current-price">$15,000</span>
+                        </div>
+                        <div class="offer-features">
+                            <span><i class="fas fa-check"></i> قابلة للتعديل</span>
+                            <span><i class="fas fa-check"></i> تقنيات حديثة</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="details-btn" onclick="window.location.href='/products/'">
+                                عرض التفاصيل <i class="fas fa-info-circle"></i>
+                            </button>
+                            <button class="offer-btn" onclick="addToCart('طاولة العمليات', 15000)">
+                                أضف للسلة <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- مصباح العمليات -->
+                <div class="offer-card">
+                    <div class="offer-image">
+                        <img src="images/products/surgery-light.jpg" alt="مصباح العمليات"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <img src="images/med-image.jpg" alt="Entity Medical Logo" class="fallback-logo"
+                            style="display: none;">
+                        <i class="fas fa-lightbulb" style="display: none;"></i>
+                    </div>
+                    <div class="offer-content">
+                        <h3>مصباح العمليات</h3>
+                        <p>مصباح عمليات LED متطور مع إضاءة موحدة ومرونة في الحركة</p>
+                        <div class="offer-price">
+                            <span class="current-price">$8,500</span>
+                        </div>
+                        <div class="offer-features">
+                            <span><i class="fas fa-check"></i> إضاءة LED</span>
+                            <span><i class="fas fa-check"></i> مرونة في الحركة</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="details-btn" onclick="window.location.href='/products/'">
+                                عرض التفاصيل <i class="fas fa-info-circle"></i>
+                            </button>
+                            <button class="offer-btn" onclick="addToCart('مصباح العمليات', 8500)">
+                                أضف للسلة <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- جهاز التخدير -->
+                <div class="offer-card">
+                    <div class="offer-image">
+                        <img src="images/products/anesthesia-machine.jpg" alt="جهاز التخدير"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <img src="images/med-image.jpg" alt="Entity Medical Logo" class="fallback-logo"
+                            style="display: none;">
+                        <i class="fas fa-shield-alt" style="display: none;"></i>
+                    </div>
+                    <div class="offer-content">
+                        <h3>جهاز التخدير</h3>
+                        <p>جهاز تخدير متطور مع مراقبة مستمرة للمريض</p>
+                        <div class="offer-price">
+                            <span class="current-price">$25,000</span>
+                        </div>
+                        <div class="offer-features">
+                            <span><i class="fas fa-check"></i> مراقبة مستمرة</span>
+                            <span><i class="fas fa-check"></i> أمان عالي</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="details-btn" onclick="window.location.href='/products/'">
+                                عرض التفاصيل <i class="fas fa-info-circle"></i>
+                            </button>
+                            <button class="offer-btn" onclick="addToCart('جهاز التخدير', 25000)">
+                                أضف للسلة <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- جهاز شفط الدم -->
+                <div class="offer-card">
+                    <div class="offer-image">
+                        <img src="images/products/suction-machine.jpg" alt="جهاز شفط الدم"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <img src="images/med-image.jpg" alt="Entity Medical Logo" class="fallback-logo"
+                            style="display: none;">
+                        <i class="fas fa-tint" style="display: none;"></i>
+                    </div>
+                    <div class="offer-content">
+                        <h3>جهاز شفط الدم</h3>
+                        <p>جهاز شفط متطور للعمليات الجراحية مع تحكم دقيق</p>
+                        <div class="offer-price">
+                            <span class="current-price">$3,500</span>
+                        </div>
+                        <div class="offer-features">
+                            <span><i class="fas fa-check"></i> تحكم دقيق</span>
+                            <span><i class="fas fa-check"></i> قوة شفط عالية</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="details-btn" onclick="window.location.href='/products/'">
+                                عرض التفاصيل <i class="fas fa-info-circle"></i>
+                            </button>
+                            <button class="offer-btn" onclick="addToCart('جهاز شفط الدم', 3500)">
+                                أضف للسلة <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- تذييل الصفحة -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <img src="images/med-image.jpg" alt="Entity Medical Logo">
+                        <div class="footer-brand-title">
+                            <strong>Entity Medical</strong>
+                            <span>الأجهزة الطبية</span>
+                        </div>
+                    </div>
+                    <p class="footer-desc">نوفر أجهزة مختارة بعناية، مع دعم سريع وخدمة منظمة تساعدك تختار
+                        المنتج المناسب بثقة.</p>
+                    <div class="footer-badges">
+                        <span class="footer-badge"><i class="fas fa-circle-check"></i> جودة مضمونة</span>
+                        <span class="footer-badge"><i class="fas fa-headset"></i> دعم سريع</span>
+                        <span class="footer-badge"><i class="fas fa-truck-fast"></i> توصيل داخل مصر</span>
+                    </div>
+
+                    <div class="footer-social" aria-label="Social links">
+                        <a href="https://wa.me/201013928114" target="_blank" rel="noopener" title="WhatsApp"><i
+                                class="fab fa-whatsapp"></i></a>
+                        <a href="https://t.me/+201013928114" target="_blank" rel="noopener" title="Telegram"><i
+                                class="fab fa-telegram"></i></a>
+                        <a href="https://www.facebook.com/profile.php?id=100064583177086" target="_blank" rel="noopener"
+                            title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/moelshekh?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                            target="_blank" rel="noopener" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>روابط سريعة</h4>
+                    <ul class="footer-links">
+                        <li><a href="/"><i class="fas fa-house"></i> الرئيسية</a></li>
+                        <li><a href="/products/"><i class="fas fa-box-open"></i> المنتجات</a></li>
+                        <li><a href="/offers/"><i class="fas fa-tags"></i> العروض</a></li>
+                        <li><a href="/about/"><i class="fas fa-circle-info"></i> حول</a></li>
+                        <li><a href="/contact/"><i class="fas fa-message"></i> تواصل معنا</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>الأقسام</h4>
+                    <ul class="footer-links">
+                        <li><a href="/products/"><i class="fas fa-stethoscope"></i> أجهزة طبية</a></li>
+                        <li><a href="/products/"><i class="fas fa-user-doctor"></i> آلات جراحية</a></li>
+                        <li><a href="/products/"><i class="fas fa-heart-pulse"></i> أجهزة العناية</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>تواصل</h4>
+                    <div class="footer-contact">
+                        <a href="/contact/"><i class="fas fa-location-dot"></i> Nasr City, Cairo</a>
+                        <a href="tel:+201013928114">
+                            <i class="fas fa-phone"></i>
+                            <span style="direction:ltr; unicode-bidi:bidi-override;">+20 101 392 8114</span>
+                        </a>
+                        <a href="mailto:entityeg21@gmail.com"><i class="fas fa-envelope"></i> entityeg21@gmail.com</a>
+                    </div>
+                    <div class="footer-cta">
+                        <a class="footer-btn" href="https://wa.me/201013928114" target="_blank" rel="noopener"><i
+                                class="fab fa-whatsapp"></i> اطلب عبر واتساب</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom-new">
+            <div class="container footer-bottom-inner">
+                <div>© <span class="js-year"></span> Entity Medical — جميع الحقوق محفوظة<span> — </span>
+                    <a href="https://www.facebook.com/profile.php?id=61585319803545" target="_blank" rel="noopener"
+                        style="color:inherit;text-decoration:none;">
+                        <img src="images/wolf-logo.png" alt="Wolf Digital Growth"
+                            style="width: 40px; vertical-align: middle;">
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </footer>
+
+    <!-- Shopping Cart Modal -->
+    <div id="cartModal" class="cart-modal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h2>عربة المشتريات</h2>
+                <button class="close-cart" onclick="toggleCart()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="cart-body">
+                <div id="cartItems" class="cart-items">
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>عربة المشتريات فارغة</p>
+                    </div>
+                </div>
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>المجموع: <span id="cartTotal">0 جنيه</span></span>
+                </div>
+                <div class="cart-actions">
+                    <button class="btn-clear" onclick="clearCart()">مسح العربة</button>
+                    <button class="btn-checkout" onclick="checkout()">إتمام الطلب</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Notification -->
+</body>
+
+</html>

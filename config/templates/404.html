@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}حول - Entity Medical{% endblock %}
+
+{% block content %}
+
+  <main style="padding: 8rem 0; min-height: 60vh; display: flex; align-items: center;">
+    <div class="container" style="max-width: 780px; text-align:center;">
+      <h1 style="font-size:3rem; margin-bottom:1.5rem; color: var(--primary-color);">404</h1>
+      <h2 style="font-size:1.5rem; margin-bottom:1rem;">الصفحة غير موجودة</h2>
+      <p style="margin-bottom:2rem; color: var(--text-color);">عذراً، الصفحة التي تبحث عنها غير متاحة أو تم نقلها.</p>
+      <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+        <a class="btn-primary" href="/">العودة للرئيسية</a>
+        <a class="btn-secondary" href="{% url 'products:home' %}">تصفح المنتجات</a>
+      </div>
+    </div>
+  </main>
+
+{% endblock %}
+
+</html>

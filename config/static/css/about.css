@@ -1,0 +1,9 @@
+/* Page-specific styles: about.html */
+
+body {
+            background-image: url('../images/image-4.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }

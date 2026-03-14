@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}حول - Entity Medical{% endblock %}
+
+{% block content %}
+    <!-- قسم المنتجات -->
+    <section class="products-section">
+        <div class="products-container">
+            <h1 class="section-title">منتجاتنا الطبية</h1>
+
+            <form method="GET" action="{% url 'products:home' %}" class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input 
+                    type="search" 
+                    name="search" 
+                    id="searchInput" 
+                    placeholder="ابحث عن المنتجات..." 
+                    value="{{ search_query }}"
+                    autocomplete="off"
+                    enterkeyhint="search"
+                >
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i>
+                    بحث
+                </button>
+            </form>
+
+    <!-- قسم الأجهزة الطبية -->
+    <section class="offers-section">
+        <div class="offers-container">
+            <a href="/products/" class="back-link">
+                <i class="fas fa-arrow-right"></i>
+                العودة إلى الأقسام
+            </a>
+
+            <h1 class="section-title">الأجهزة الطبية</h1>
+
+            <div class="offers-grid">
+                <!-- سماعة طبية -->
+                <div class="offer-card">
+                    <div class="offer-image">
+                        <img src="images/products/stethoscope.jpg" alt="سماعة طبية"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <img src="images/med-image.jpg" alt="Entity Medical Logo" class="fallback-logo"
+                            style="display: none;">
+                        <i class="fas fa-stethoscope" style="display: none;"></i>
+                    </div>
+                    <div class="offer-content">
+                        <h3>سماعة طبية</h3>
+                        <p>سماعة طبية عالية الجودة للتشخيص الدقيق</p>
+                        <div class="offer-price">
+                            <span class="current-price">$150</span>
+                        </div>
+                        <div class="offer-features">
+                            <span><i class="fas fa-check"></i> جودة عالية</span>
+                            <span><i class="fas fa-check"></i> صوت واضح</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="details-btn" onclick="window.location.href='/products/'">
+                                عرض التفاصيل <i class="fas fa-info-circle"></i>
+                            </button>
+                            <button class="offer-btn" onclick="addToCart('سماعة طبية', 150)">
+                                أضف للسلة <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- جهاز ضغط دم رقمي -->
+                <div class="offer-card">
+                    <div class="offer-image">
+                        <img src="images/products/blood-pressure.jpg" alt="جهاز ضغط دم رقمي"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <img src="images/med-image.jpg" alt="Entity Medical Logo" class="fallback-logo"
+                            style="display: none;">
+                        <i class="fas fa-heart-pulse" style="display: none;"></i>
+                    </div>
+                    <div class="offer-content">
+                        <h3>جهاز ضغط دم رقمي</h3>
+                        <p>جهاز ضغط دم رقمي دقيق وسهل الاستخدام مع شاشة LCD</p>
+                        <div class="offer-price">
+                            <span class="current-price">$85</span>
+                        </div>
+                        <div class="offer-features">
+                            <span><i class="fas fa-check"></i> دقة عالية</span>
+                            <span><i class="fas fa-check"></i> سهل الاستخدام</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="details-btn" onclick="window.location.href='/products/'">
+                                عرض التفاصيل <i class="fas fa-info-circle"></i>
+                            </button>
+                            <button class="offer-btn" onclick="addToCart('جهاز ضغط دم رقمي', 85)">
+                                أضف للسلة <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ميزان حرارة عن بعد -->
+                <div class="offer-card">
+                    <div class="offer-image">
+                        <img src="images/products/thermometer.jpg" alt="ميزان حرارة عن بعد"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <img src="images/med-image.jpg" alt="Entity Medical Logo" class="fallback-logo"
+                            style="display: none;">
+                        <i class="fas fa-thermometer-half" style="display: none;"></i>
+                    </div>
+                    <div class="offer-content">
+                        <h3>ميزان حرارة عن بعد</h3>
+                        <p>ميزان حرارة يعمل بالأشعة تحت الحمراء لقياس الحرارة بدون تلامس</p>
+                        <div class="offer-price">
+                            <span class="current-price">$45</span>
+                        </div>
+                        <div class="offer-features">
+                            <span><i class="fas fa-check"></i> قياس بدون تلامس</span>
+                            <span><i class="fas fa-check"></i> نتائج سريعة</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="details-btn" onclick="window.location.href='/products/'">
+                                عرض التفاصيل <i class="fas fa-info-circle"></i>
+                            </button>
+                            <button class="offer-btn" onclick="addToCart('ميزان حرارة عن بعد', 45)">
+                                أضف للسلة <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- جهاز قياس الأكسجين -->
+                <div class="offer-card">
+                    <div class="offer-image">
+                        <img src="images/products/oximeter.jpg" alt="جهاز قياس الأكسجين"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <img src="images/med-image.jpg" alt="Entity Medical Logo" class="fallback-logo"
+                            style="display: none;">
+                        <i class="fas fa-fingerprint" style="display: none;"></i>
+                    </div>
+                    <div class="offer-content">
+                        <h3>جهاز قياس الأكسجين</h3>
+                        <p>جهاز محمول لقياس نسبة الأكسجين في الدم ونبضات القلب</p>
+                        <div class="offer-price">
+                            <span class="current-price">$35</span>
+                        </div>
+                        <div class="offer-features">
+                            <span><i class="fas fa-check"></i> قياس سريع</span>
+                            <span><i class="fas fa-check"></i> محمول</span>
+                        </div>
+                        <div class="product-actions">
+                            <button class="details-btn" onclick="window.location.href='/products/'">
+                                عرض التفاصيل <i class="fas fa-info-circle"></i>
+                            </button>
+                            <button class="offer-btn" onclick="addToCart('جهاز قياس الأكسجين', 35)">
+                                أضف للسلة <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+</html>
