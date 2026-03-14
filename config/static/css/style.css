@@ -35,6 +35,10 @@ body {
     padding: 0;
 }
 
+body {
+    padding-top: 0 !important;
+}
+
 .about-page {
     background-image: url('../images/image-4.jpg');
     background-size: cover;
@@ -56,8 +60,22 @@ body {
     padding: 1rem 0;
     position: fixed;
     width: 100%;
-    top: 0;
+    top: 0 !important;
+    left: 0;
     z-index: 1000;
+}
+
+.navbar::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(-1 * constant(safe-area-inset-top));
+    top: calc(-1 * env(safe-area-inset-top, 0px));
+    height: constant(safe-area-inset-top);
+    height: env(safe-area-inset-top, 0px);
+    background: inherit;
+    pointer-events: none;
 }
 
 .navbar .container {
