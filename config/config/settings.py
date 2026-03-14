@@ -30,7 +30,13 @@ DEBUG = env_bool("DJANGO_DEBUG", default=False)
 
 ALLOWED_HOSTS = env_list(
     "DJANGO_ALLOWED_HOSTS",
-    default=["127.0.0.1", "localhost", "193.203.191.141"],
+    default=[
+        "127.0.0.1",
+        "localhost",
+        "193.203.191.141",
+        "entitymedicalegypt.com",
+        "www.entitymedicalegypt.com",
+    ],
 )
 
 
@@ -152,9 +158,12 @@ CSRF_TRUSTED_ORIGINS = env_list(
     default=[
         "http://127.0.0.1:8000",
         "http://localhost:8000",
-        "https://127.0.0.1",
-        "https://localhost",
+        "http://193.203.191.141",
+        "http://entitymedicalegypt.com",
+        "http://www.entitymedicalegypt.com",
         "https://193.203.191.141",
+        "https://entitymedicalegypt.com",
+        "https://www.entitymedicalegypt.com",
     ],
 )
 
