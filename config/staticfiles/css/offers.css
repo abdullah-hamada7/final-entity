@@ -1,0 +1,395 @@
+/* Page-specific styles: offers.html */
+
+.offers-section {
+    margin-top: 80px;
+    padding: 4rem 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.offers-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 20% 80%, rgba(27, 155, 216, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+}
+
+.offers-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.section-title {
+    text-align: center;
+    color: var(--secondary-color);
+    margin-bottom: 4rem;
+    font-size: 4rem;
+    font-weight: 800;
+    text-shadow: 3px 3px 6px rgba(27, 155, 216, 0.2);
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 4px;
+    background: linear-gradient(135deg, var(--secondary-color) 0%, #FFD700 100%);
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(27, 155, 216, 0.3);
+}
+
+.offers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 3rem;
+    margin-bottom: 4rem;
+}
+
+.offer-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(255, 215, 0, 0.15);
+    transition: all 0.4s ease;
+    position: relative;
+    border: 3px solid #FFD700;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.offer-card:hover {
+    transform: translateY(-15px) scale(1.02);
+    box-shadow: 0 25px 50px rgba(27, 40, 72, 0.25);
+    border-color: var(--secondary-color);
+}
+
+.offer-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 700;
+    z-index: 3;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+    animation: pulse 2s infinite;
+}
+
+.offer-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, var(--light-blue) 0%, var(--very-light-blue) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 2px solid #FFD700;
+}
+
+.offer-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 10px;
+    transition: all 0.4s ease;
+}
+
+@media (max-width: 768px) {
+    .offer-image img {
+        object-fit: cover;
+        padding: 0;
+    }
+}
+
+.offer-image:hover img {
+    transform: scale(1.1);
+}
+
+.offer-image i {
+    font-size: 5rem;
+    color: var(--secondary-color);
+    position: relative;
+    z-index: 1;
+}
+
+.fallback-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--light-blue) 0%, var(--very-light-blue) 100%);
+    padding: 1rem;
+}
+
+.offer-content {
+    padding: 2.5rem;
+    text-align: center;
+}
+
+.offer-content h3 {
+    color: var(--secondary-color);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.offer-content p {
+    color: var(--text-color);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+.offer-prices {
+    margin-bottom: 2.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.old-price {
+    color: #999;
+    text-decoration: line-through;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.new-price {
+    color: #e74c3c;
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.offer-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.offer-cart-btn {
+    background: linear-gradient(to right, #f1c40f, #e67e22);
+    color: #1B2848;
+    border: none;
+    padding: 0.9rem 2.2rem;
+    border-radius: 50px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 8px 20px rgba(230, 126, 34, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+.offer-cart-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.6s;
+}
+
+.offer-cart-btn:hover::before {
+    left: 100%;
+}
+
+.offer-cart-btn:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 12px 25px rgba(230, 126, 34, 0.5);
+    background: linear-gradient(to right, #e67e22, #f39c12);
+}
+
+.offer-details-btn {
+    background: linear-gradient(to right, #3498db, #95d5ee);
+    color: white;
+    text-decoration: none;
+    padding: 0.9rem 2.2rem;
+    border-radius: 50px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+.offer-details-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s;
+}
+
+.offer-details-btn:hover::before {
+    left: 100%;
+}
+
+.offer-details-btn:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 12px 25px rgba(52, 152, 219, 0.5);
+    background: linear-gradient(to right, #2980b9, #3498db);
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 3rem;
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(27, 155, 216, 0.1);
+    position: relative !important;
+    top: 0 !important;
+    z-index: 10;
+}
+
+.back-link:hover {
+    background: #1B2848;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(27, 40, 72, 0.3);
+}
+
+.back-link i {
+    margin-left: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.offer-features {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+    text-align: right;
+}
+
+.offer-features li {
+    color: var(--text-color);
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--light-blue);
+    font-weight: 500;
+}
+
+.offer-features li:last-child {
+    border-bottom: none;
+}
+
+.offer-features li::before {
+    content: '✓';
+    color: var(--secondary-color);
+    margin-left: 0.8rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* تجاوب قسم العروض */
+@media (max-width: 768px) {
+    .section-title {
+        font-size: 3rem;
+        margin-bottom: 3rem;
+    }
+
+    .offers-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .offer-actions {
+        flex-direction: column;
+    }
+
+    .offer-cart-btn,
+    .offer-details-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .offer-content {
+        padding: 2rem;
+    }
+
+    .offer-prices {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
