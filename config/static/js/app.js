@@ -80,6 +80,23 @@
     window.addEventListener('scroll', onScroll, { passive: true });
   }
 
+  function syncNavbarHeight() {
+    const nav = qs('.navbar');
+    if (!nav) return;
+
+    const setHeight = () => {
+      const height = nav.getBoundingClientRect().height;
+      if (height > 0) {
+        document.documentElement.style.setProperty('--navbar-height', `${Math.ceil(height)}px`);
+      }
+    };
+
+    setHeight();
+    window.addEventListener('resize', setHeight, { passive: true });
+    window.addEventListener('orientationchange', setHeight, { passive: true });
+    window.addEventListener('load', setHeight, { passive: true });
+  }
+
   function setupMobileMenu() {
     const hamburger = qs('.hamburger');
     const mobileMenu = qs('.mobile-menu');
@@ -297,6 +314,7 @@
 
     setupMobileMenu();
     setupNavbarScroll();
+    syncNavbarHeight();
     setupFooterYear();
     setupBackToTop();
 

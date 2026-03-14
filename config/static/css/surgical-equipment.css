@@ -1,7 +1,7 @@
 /* Page-specific styles: surgical-equipment.html */
 
 .offers-section {
-    margin-top: 80px;
+    margin-top: 0;
     padding: 4rem 0;
     background: linear-gradient(135deg, var(--light-blue) 0%, var(--very-light-blue) 100%);
     min-height: 100vh;

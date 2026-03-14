@@ -608,7 +608,7 @@ footer::before {
 }
 
 .about-section {
-    margin-top: 80px;
+    margin-top: 0;
     padding: 4rem 0;
 }
 
@@ -945,7 +945,7 @@ footer::before {
 
 /* تنسيقات صفحات فئات المنتجات */
 .product-category-section {
-    margin-top: 80px;
+    margin-top: 0;
     padding: 4rem 0;
 }
 
@@ -1068,7 +1068,7 @@ footer::before {
 }
 
 .product-details-section {
-    margin-top: 80px;
+    margin-top: 0;
     padding: 4rem 0;
 }
 
