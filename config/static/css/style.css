@@ -19,7 +19,6 @@
     --very-light-blue: #f0f9ff;
     --border-color: #e2e8f0;
     --hover-color: #0284c7;
-    --safe-area-top: env(safe-area-inset-top, 0px);
 }
 
 body {
@@ -28,6 +27,12 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     width: 100%;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
 }
 
 .about-page {
@@ -46,14 +51,12 @@ body {
 
 /* القائمة العلوية */
 .navbar {
-    --navbar-vertical-padding: 1rem;
     background-color: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    padding: calc(var(--navbar-vertical-padding) + var(--safe-area-top)) 0 var(--navbar-vertical-padding);
+    padding: 1rem 0;
     position: fixed;
     width: 100%;
     top: 0;
-    transform: translateY(calc(-1 * var(--safe-area-top)));
     z-index: 1000;
 }
 
@@ -1926,10 +1929,11 @@ footer::before {
 
 @media (max-width: 768px) {
     .navbar {
-        --navbar-vertical-padding: 0.7rem;
+        padding: 0;
     }
 
     .navbar .container {
+        min-height: 56px;
         position: relative;
     }
 

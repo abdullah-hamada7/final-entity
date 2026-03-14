@@ -446,7 +446,7 @@ body.menu-open {
         }
 
         .navbar {
-            --navbar-vertical-padding: 0.8rem;
+            padding: 0;
         }
 
         .logo img {
