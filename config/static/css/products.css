@@ -150,9 +150,17 @@
 }
 
 @media (max-width: 768px) {
+    .products-section {
+        padding: 1.5rem 0 3rem;
+    }
+
     .offers-grid {
         grid-template-columns: 1fr;
         gap: 2rem;
+    }
+
+    .section-title {
+        margin-bottom: 2rem;
     }
 
     .offer-content {

@@ -19,7 +19,7 @@
     --very-light-blue: #f0f9ff;
     --border-color: #e2e8f0;
     --hover-color: #0284c7;
-    --navbar-height: 80px;
+    --navbar-height: 72px;
 }
 
 body {
@@ -106,8 +106,8 @@ body {
 
 
 .logo img {
-    height: 60px;
-    width: 60px;
+    height: 52px;
+    width: 52px;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid white;
@@ -1946,7 +1946,7 @@ footer::before {
 
 @media (max-width: 768px) {
     :root {
-        --navbar-height: 64px;
+        --navbar-height: 56px;
     }
 
     .navbar {

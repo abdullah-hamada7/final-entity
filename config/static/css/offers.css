@@ -364,9 +364,13 @@
 
 /* تجاوب قسم العروض */
 @media (max-width: 768px) {
+    .offers-section {
+        padding: 1.5rem 0 3rem;
+    }
+
     .section-title {
         font-size: 3rem;
-        margin-bottom: 3rem;
+        margin-bottom: 2rem;
     }
 
     .offers-grid {
