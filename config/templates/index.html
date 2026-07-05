@@ -1,13 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}حول - Entity Medical{% endblock %}
+{% block title %}Entity Medical - الرئيسية{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+{% endblock %}
 
 {% block content %}
     <!-- القسم الرئيسي -->
     <header class="hero">
         <div class="container">
-            <h1><span id="title">Ent<span class="special-i">i</span>ty</span> <span id="title">Medical</span></h1>
+            <h1 id="title"><span>Ent<span class="special-i">i</span>ty</span> <span>Medical</span></h1>
             <p>نقدم لكم أفضل الأجهزة الطبية بأعلى جودة وأفضل الأسعار مع ضمان الجودة والخدمة المتميزة</p>
             <a href="{% url 'products:home' %}" class="cta-button">
                 <i class="fas fa-calendar-check"></i>

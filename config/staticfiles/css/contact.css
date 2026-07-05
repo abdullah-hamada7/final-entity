@@ -2,11 +2,11 @@
 
 /* تحسينات صفحة التواصل */
 .contact-section {
-    margin-top: 80px;
+    margin-top: 0;
     padding: 6rem 0;
     min-height: 100vh;
     position: relative;
-    background: url('../images/image-4.jpg') center/cover no-repeat fixed;
+    background: url('../images/image-4.jpg') center/cover no-repeat scroll;
 }
 
 .contact-section::before {

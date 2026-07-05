@@ -18,7 +18,7 @@ body.menu-open {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 12px;
+    padding: 8px;
     /* Increased hit area */
     z-index: 1100;
     /* Extremely high to stay above everything */
@@ -422,130 +422,110 @@ body.menu-open {
         font-size: 1.1rem;
     }
 
-    /* =========================================
-       TABLET SPECIFIC CONTROL (769px - 992px)
-       Code here affects ONLY Tablets, not Mobile
-       ========================================= */
-    /* Tablet specific logo control removed to prevent conflict with index.css */
-
-    .features .cards-container {
-
-        .features .cards-container {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        .shortcuts-grid {
-            grid-template-columns: 1fr;
-        }
+    .container {
+        padding: 0 1.5rem;
     }
 
-    /* Large Phones */
-    @media (max-width: 768px) {
-        .container {
-            padding: 0 1.5rem;
-        }
+    .navbar {
+        padding: 0;
+    }
 
-        .navbar {
-            padding: 0.8rem 0;
-        }
+    .logo img {
+        height: 40px;
+        width: 40px;
+    }
 
-        .logo img {
-            height: 50px;
-            width: 50px;
-        }
+    .hero {
+        padding: 5rem 0 2rem;
+        min-height: 70vh;
+    }
 
-        .hero {
-            padding: 5rem 0 2rem;
-            min-height: 70vh;
-        }
+    .hero h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
 
-        .hero h1 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
+    .hero p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
 
-        .hero p {
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-        }
+    /* Phone Specific Logo Styles (Separate from Tablet) */
+    .hero #title .special-i {
+        transform: scaleX(2) !important;
+        margin-left: 0.2em !important;
+        margin-right: 0.12em !important;
+    }
 
-        /* Phone Specific Logo Styles (Separate from Tablet) */
-        .hero #title .special-i {
-            transform: scaleX(2) !important;
-            margin-left: 0.2em !important;
-            margin-right: 0.12em !important;
-        }
+    .hero #title .special-i::before,
+    .hero #title .special-i::after {
+        left: calc(50% - 0.04em) !important;
+        transform: translateX(-50%) !important;
+    }
 
-        .hero #title .special-i::before,
-        .hero #title .special-i::after {
-            left: calc(50% - 0.04em) !important;
-            transform: translateX(-50%) !important;
-        }
+    .cta-button {
+        padding: 0.9rem 1.8rem;
+        font-size: 1rem;
+    }
 
-        .cta-button {
-            padding: 0.9rem 1.8rem;
-            font-size: 1rem;
-        }
+    .features {
+        padding: 4rem 0;
+    }
 
-        .features {
-            padding: 4rem 0;
-        }
+    .features h2 {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
 
-        .features h2 {
-            font-size: 2rem;
-            margin-bottom: 2rem;
-        }
+    .features .cards-container {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+    }
 
-        .features .cards-container {
-            grid-template-columns: 1fr;
-            gap: 1.2rem;
-        }
+    .feature-card {
+        padding: 1.8rem 1.2rem;
+    }
 
-        .feature-card {
-            padding: 1.8rem 1.2rem;
-        }
+    .shortcuts {
+        padding: 4rem 0;
+    }
 
-        .shortcuts {
-            padding: 4rem 0;
-        }
+    .shortcuts h2 {
+        font-size: 2rem;
+    }
 
-        .shortcuts h2 {
-            font-size: 2rem;
-        }
+    .shortcuts-grid {
+        gap: 1.5rem;
+    }
 
-        .shortcuts-grid {
-            gap: 1.5rem;
-        }
+    .footer-top {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 2rem 1rem !important;
+    }
 
-        .footer-top {
-            grid-template-columns: 1fr 1fr !important;
-            gap: 2rem 1rem !important;
-        }
+    .footer-col {
+        text-align: center;
+    }
 
-        .footer-col {
-            text-align: center;
-        }
+    .footer-brand {
+        grid-column: 1 / -1;
+        text-align: center;
+    }
 
-        .footer-brand {
-            grid-column: 1 / -1;
-            text-align: center;
-        }
+    .footer-col:last-child {
+        grid-column: 1 / -1;
+    }
 
-        .footer-col:last-child {
-            grid-column: 1 / -1;
-        }
+    .footer-social {
+        justify-content: center;
+    }
 
-        .footer-social {
-            justify-content: center;
-        }
+    .footer-contact {
+        align-items: center;
+    }
 
-        .footer-contact {
-            align-items: center;
-        }
-
-        .footer-links {
-            align-items: center;
-        }
+    .footer-links {
+        align-items: center;
     }
 
     /* Medium Phones */
@@ -567,8 +547,8 @@ body.menu-open {
         }
 
         .logo img {
-            height: 45px;
-            width: 45px;
+            height: 36px;
+            width: 36px;
         }
 
         .hero h1 {
@@ -638,5 +618,15 @@ body.menu-open {
             font-size: 0.9rem;
             min-width: 200px;
         }
+    }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+    .features .cards-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .shortcuts-grid {
+        grid-template-columns: 1fr;
     }
 }
