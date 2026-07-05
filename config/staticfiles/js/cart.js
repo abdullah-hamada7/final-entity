@@ -143,61 +143,26 @@
 
   function updateCheckoutButton() {
     const btn = document.getElementById('cartCheckoutBtn');
-    const guestFields = document.getElementById('guestCheckoutFields');
     const notice = document.getElementById('cartLoginNotice');
     const loggedIn = isLoggedIn();
 
     if (btn) {
-      btn.textContent = 'إتمام الطلب';
-    }
-    if (guestFields) {
-      guestFields.hidden = loggedIn;
+      btn.textContent = loggedIn ? 'إتمام الطلب' : 'تسجيل الدخول لإتمام الطلب';
     }
     if (notice) {
       notice.hidden = loggedIn;
     }
   }
 
-  function validateCheckoutDetails(details) {
-    const validation = window.EntityValidation;
-    if (!validation) return null;
-
-    if (isLoggedIn()) return null;
-
-    let msg = validation.validateName(details.full_name);
-    if (msg) return msg;
-    msg = validation.validatePhone(details.phone, true);
-    if (msg) return msg;
-    if (details.address) {
-      msg = validation.validateAddress(details.address);
-      if (msg) return msg;
-    }
-    return null;
-  }
-
   function getCheckoutDetails() {
     const body = document.body;
     const validation = window.EntityValidation;
 
-    if (isLoggedIn()) {
-      return {
-        full_name: body.dataset.userName || '',
-        phone: validation ? validation.normalizePhone(body.dataset.userPhone) : (body.dataset.userPhone || ''),
-        email: body.dataset.userEmail || '',
-        address: '',
-        notes: '',
-      };
-    }
-
-    const nameEl = document.getElementById('guestFullName');
-    const phoneEl = document.getElementById('guestPhone');
-    const addressEl = document.getElementById('guestAddress');
-
     return {
-      full_name: (nameEl?.value || '').trim(),
-      phone: validation ? validation.normalizePhone(phoneEl?.value) : (phoneEl?.value || '').trim(),
-      email: '',
-      address: (addressEl?.value || '').trim(),
+      full_name: body.dataset.userName || '',
+      phone: validation ? validation.normalizePhone(body.dataset.userPhone) : (body.dataset.userPhone || ''),
+      email: body.dataset.userEmail || '',
+      address: '',
       notes: '',
     };
   }
@@ -358,17 +323,18 @@
       return;
     }
 
-    const details = getCheckoutDetails();
-    const validationError = validateCheckoutDetails(details);
-    if (validationError) {
-      notify(validationError, 'warning');
-      if (!isLoggedIn()) {
-        document.getElementById('guestCheckoutFields')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
+    if (!isLoggedIn()) {
+      redirectToLogin('يجب تسجيل الدخول لإتمام الطلب');
       return;
     }
 
-    const { ok, data } = await apiRequest(API.checkout, 'POST', details);
+    const details = getCheckoutDetails();
+    const { ok, status, data } = await apiRequest(API.checkout, 'POST', details);
+
+    if (status === 401 || status === 403) {
+      redirectToLogin('يجب تسجيل الدخول لإتمام الطلب');
+      return;
+    }
 
     if (ok && data.success) {
       cart = [];

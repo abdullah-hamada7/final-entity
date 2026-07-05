@@ -192,9 +192,9 @@ class ClearCartAPIView(APIView):
 
 class CreateOrderAPIView(APIView):
     """
-    POST: إنشاء طلب من السلة (مسجّل أو زائر)
+    POST: إنشاء طلب من السلة (يتطلب تسجيل الدخول)
     """
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         serializer = CreateOrderSerializer(data=request.data)
@@ -215,28 +215,10 @@ class CreateOrderAPIView(APIView):
                 }, status=status.HTTP_400_BAD_REQUEST)
 
             data = serializer.validated_data
-
-            if request.user.is_authenticated:
-                user = request.user
-                full_name = (data.get('full_name') or '').strip() or user.full_name
-                phone = (data.get('phone') or '').strip() or user.phone
-                email = (data.get('email') or '').strip() or (user.email or '')
-            else:
-                user = None
-                full_name = (data.get('full_name') or '').strip()
-                phone = (data.get('phone') or '').strip()
-                email = (data.get('email') or '').strip()
-
-                if not full_name:
-                    return Response({
-                        'success': False,
-                        'message': 'الاسم الكامل مطلوب'
-                    }, status=status.HTTP_400_BAD_REQUEST)
-                if not phone:
-                    return Response({
-                        'success': False,
-                        'message': 'رقم الهاتف مطلوب'
-                    }, status=status.HTTP_400_BAD_REQUEST)
+            user = request.user
+            full_name = (data.get('full_name') or '').strip() or user.full_name
+            phone = (data.get('phone') or '').strip() or user.phone
+            email = (data.get('email') or '').strip() or (user.email or '')
 
             order = Order.objects.create(
                 user=user,

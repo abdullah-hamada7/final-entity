@@ -281,24 +281,27 @@ def api_create_order(request):
 
 @require_POST
 def submit_cart(request):
+    if not request.user.is_authenticated:
+        next_path = request.META.get('HTTP_REFERER', '/')
+        login_url = f"{reverse('users:login')}?next={quote(next_path, safe='')}"
+        return JsonResponse({
+            "success": False,
+            "login_required": True,
+            "message": "يجب تسجيل الدخول لإتمام الطلب",
+            "login_url": login_url,
+        }, status=401)
+
     try:
         data = json.loads(request.body)
         db_cart = get_or_create_cart(request)
+        user = request.user
 
         if not db_cart.items.exists():
             return JsonResponse({"success": False, "message": "السلة فارغة"}, status=400)
 
-        if request.user.is_authenticated:
-            user = request.user
-            full_name = (data.get("full_name") or "").strip() or user.full_name
-            phone = (data.get("phone") or "").strip() or user.phone
-            email = (data.get("email") or "").strip() or (user.email or "")
-        else:
-            user = None
-            full_name = (data.get("full_name") or "").strip()
-            phone = (data.get("phone") or "").strip()
-            email = (data.get("email") or "").strip()
-
+        full_name = (data.get("full_name") or "").strip() or user.full_name
+        phone = (data.get("phone") or "").strip() or user.phone
+        email = (data.get("email") or "").strip() or (user.email or "")
         address = (data.get("address") or "").strip()
         notes = (data.get("notes") or "").strip()
 
