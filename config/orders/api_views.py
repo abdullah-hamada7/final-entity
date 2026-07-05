@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from .models import Cart, CartItem, Order, OrderItem
 from products.models import Product
+from .pricing import get_product_unit_price, resolve_cart_item_unit_price
 from .serializers import (
     CartSerializer, AddToCartSerializer, UpdateCartQuantitySerializer,
     RemoveFromCartSerializer, OrderSerializer, CreateOrderSerializer
@@ -54,19 +55,22 @@ class AddToCartAPIView(APIView):
 
         product_id = serializer.validated_data['product_id']
         quantity = serializer.validated_data['quantity']
+        offer_id = serializer.validated_data.get('offer_id')
 
         try:
             product = get_object_or_404(Product, id=product_id, is_active=True)
             cart = get_or_create_cart(request)
+            unit_price = get_product_unit_price(product, offer_id)
 
             cart_item, created = CartItem.objects.get_or_create(
                 cart=cart,
                 product=product,
-                defaults={'quantity': quantity}
+                defaults={'quantity': quantity, 'unit_price': unit_price}
             )
 
             if not created:
                 cart_item.quantity += quantity
+                cart_item.unit_price = resolve_cart_item_unit_price(cart_item, offer_id)
                 cart_item.save()
 
             cart_serializer = CartSerializer(cart)
@@ -237,7 +241,7 @@ class CreateOrderAPIView(APIView):
                     product=product,
                     product_name=product.name,
                     quantity=cart_item.quantity,
-                    price=product.final_price
+                    price=cart_item.effective_price
                 )
 
             whatsapp_link = order.generate_whatsapp_link()

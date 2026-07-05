@@ -72,7 +72,7 @@
                     <div class="stat-box">
                         <div class="icon"><i class="fas fa-shopping-bag"></i></div>
                         <div class="info">
-                            <h3 id="statOrders">{{ order_count }}</h3>
+                            <h3 id="statOrders">0</h3>
                             <p>طلب حالي</p>
                         </div>
                     </div>
@@ -98,33 +98,22 @@
                         <div class="box-header">
                             <h2><i class="fas fa-history"></i> سجل الطلبات</h2>
                         </div>
-                        {% if orders %}
-                        <div class="orders-list">
-                            {% for order in orders %}
-                            <div class="order-item">
-                                <div class="order-item-header">
-                                    <strong>طلب #{{ order.order_number }}</strong>
-                                    <span class="order-status order-status--{{ order.status }}">{{ order.get_status_display }}</span>
-                                </div>
-                                <div class="order-item-meta">
-                                    <span><i class="fas fa-calendar"></i> {{ order.created_at|date:"Y/m/d H:i" }}</span>
-                                    <span><i class="fas fa-coins"></i> {{ order.total_amount|floatformat:0 }} جنيه</span>
-                                </div>
-                                <ul class="order-item-products">
-                                    {% for item in order.items.all %}
-                                    <li>{{ item.product_name }} × {{ item.quantity }}</li>
-                                    {% endfor %}
-                                </ul>
+                        <div id="profileOrdersPanel">
+                            <div id="profileOrdersLoading" class="orders-loading">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>جاري تحميل الطلبات...</p>
                             </div>
-                            {% endfor %}
+                            <div id="profileOrdersList" class="orders-list" hidden></div>
+                            <div id="profileOrdersEmpty" class="empty-state" hidden>
+                                <i class="fas fa-box-open"></i>
+                                <p>لا توجد طلبات سابقة حتى الآن</p>
+                                <a href="{% url 'products:home' %}" class="auth-btn small">تصفح المنتجات</a>
+                            </div>
+                            <div id="profileOrdersError" class="empty-state" hidden>
+                                <i class="fas fa-exclamation-circle"></i>
+                                <p data-orders-error>تعذر تحميل الطلبات</p>
+                            </div>
                         </div>
-                        {% else %}
-                        <div class="empty-state">
-                            <i class="fas fa-box-open"></i>
-                            <p>لا توجد طلبات سابقة حتى الآن</p>
-                            <a href="{% url 'products:home' %}" class="auth-btn small">تصفح المنتجات</a>
-                        </div>
-                        {% endif %}
                     </div>
                 </div>
 

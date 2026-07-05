@@ -60,6 +60,19 @@
     return String(Math.round(num));
   }
 
+  function extractApiError(data, fallback) {
+    if (data?.message) return data.message;
+    const errors = data?.errors;
+    if (errors && typeof errors === 'object') {
+      for (const key of Object.keys(errors)) {
+        const value = errors[key];
+        if (Array.isArray(value) && value[0]) return value[0];
+        if (typeof value === 'string') return value;
+      }
+    }
+    return fallback;
+  }
+
   function applyCartPayload(cartData) {
     if (!cartData?.items) {
       cart = [];
@@ -70,7 +83,7 @@
       cartItemId: item.id,
       productId: item.product?.id,
       name: item.product?.name || '',
-      price: Number(item.product?.final_price ?? item.product?.price ?? 0),
+      price: Number(item.effective_price ?? item.unit_price ?? item.product?.final_price ?? item.product?.price ?? 0),
       icon: item.product?.icon || 'fas fa-box',
       quantity: Number(item.quantity) || 1,
     }));
@@ -130,8 +143,8 @@
     }
 
     for (const item of legacyItems) {
-      const productId = item.productId || item.product_id;
-      if (!productId) continue;
+      const productId = parseInt(item.productId || item.product_id, 10);
+      if (!Number.isFinite(productId)) continue;
       await apiRequest(API.add, 'POST', {
         product_id: productId,
         quantity: Number(item.quantity) || 1,
@@ -230,16 +243,31 @@
     notify('تم استلام طلبك وسوف يتم التواصل معك قريبًا', 'success', 3000);
   }
 
-  async function addToCart(name, price, icon, productId) {
-    if (!productId) {
+  function addToCartFromButton(btn) {
+    if (!btn?.dataset) return;
+    addToCart(
+      btn.dataset.productName || '',
+      parseFloat(btn.dataset.productPrice) || 0,
+      btn.dataset.productIcon || 'fas fa-box',
+      btn.dataset.productId,
+      btn.dataset.offerId
+    );
+  }
+
+  async function addToCart(name, price, icon, productId, offerId) {
+    const id = parseInt(productId, 10);
+    if (!Number.isFinite(id)) {
       notify('لا يمكن إضافة هذا المنتج', 'error');
       return;
     }
 
-    const { ok, data } = await apiRequest(API.add, 'POST', {
-      product_id: productId,
-      quantity: 1,
-    });
+    const payload = { product_id: id, quantity: 1 };
+    const parsedOfferId = parseInt(offerId, 10);
+    if (Number.isFinite(parsedOfferId)) {
+      payload.offer_id = parsedOfferId;
+    }
+
+    const { ok, data } = await apiRequest(API.add, 'POST', payload);
 
     if (ok && data.success && data.cart) {
       applyCartPayload(data.cart);
@@ -248,7 +276,7 @@
       return;
     }
 
-    notify(data.message || data.errors?.product_id?.[0] || 'فشل إضافة المنتج', 'error');
+    notify(extractApiError(data, 'فشل إضافة المنتج'), 'error');
   }
 
   async function removeFromCart(cartItemId) {
@@ -357,21 +385,27 @@
       return;
     }
 
+    const offerSection = document.querySelector('.offer-detail-section');
+    const offerId = offerSection?.dataset?.offerId;
+    const parsedOfferId = parseInt(offerId, 10);
+    const hasOffer = Number.isFinite(parsedOfferId);
+
     let addedCount = 0;
 
     for (const card of productCards) {
       const productId = card.getAttribute('data-product-id');
       if (!productId) continue;
 
-      const nameElement = card.querySelector('h3');
-      const name = nameElement?.textContent?.trim() || '';
-      const alreadyInCart = cart.some((item) => item.name === name);
+      const productIdNum = parseInt(productId, 10);
+      if (!Number.isFinite(productIdNum)) continue;
+
+      const alreadyInCart = cart.some((item) => item.productId === productIdNum);
       if (alreadyInCart) continue;
 
-      const { ok, data } = await apiRequest(API.add, 'POST', {
-        product_id: Number(productId),
-        quantity: 1,
-      });
+      const payload = { product_id: productIdNum, quantity: 1 };
+      if (hasOffer) payload.offer_id = parsedOfferId;
+
+      const { ok, data } = await apiRequest(API.add, 'POST', payload);
 
       if (ok && data.success && data.cart) {
         applyCartPayload(data.cart);
@@ -439,6 +473,7 @@
   });
 
   window.addToCart = addToCart;
+  window.addToCartFromButton = addToCartFromButton;
   window.removeFromCart = removeFromCart;
   window.updateQuantity = updateQuantity;
   window.clearCart = clearCart;

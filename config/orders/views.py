@@ -7,6 +7,7 @@ from django.urls import reverse
 from urllib.parse import quote
 from .models import Cart, CartItem, Order, OrderItem
 from products.models import Product
+from .pricing import get_product_unit_price, resolve_cart_item_unit_price
 import json
 from django.contrib.auth import get_user_model
 from offers.models import Offer, OfferProduct
@@ -33,15 +34,18 @@ def add_to_cart(request):
 
         product = get_object_or_404(Product, id=product_id, is_active=True)
         cart = get_or_create_cart(request)
+        unit_price = get_product_unit_price(product)
 
         cart_item, created = CartItem.objects.get_or_create(
             cart=cart,
             product=product,
-            defaults={'quantity': quantity}
+            defaults={'quantity': quantity, 'unit_price': unit_price}
         )
 
         if not created:
             cart_item.quantity += quantity
+            if cart_item.unit_price is None:
+                cart_item.unit_price = unit_price
             cart_item.save()
 
         return JsonResponse({
@@ -144,7 +148,7 @@ def checkout(request):
                 product=cart_item.product,
                 product_name=cart_item.product.name,
                 quantity=cart_item.quantity,
-                price=cart_item.product.final_price
+                price=cart_item.effective_price
             )
 
         whatsapp_link = order.generate_whatsapp_link()
@@ -178,27 +182,32 @@ def order_detail(request, order_number):
 
 def add_all_offer_products(request, offer_id):
     if request.method == "POST":
-        data = json.loads(request.body)
-        products_data = data.get("products", [])
-        cart, created = Cart.objects.get_or_create(user=request.user)
+        offer = get_object_or_404(Offer, id=offer_id, is_active=True)
+        cart = get_or_create_cart(request)
 
         added_products = []
+        offer_products = OfferProduct.objects.filter(offer=offer).select_related('product')
 
-        for p in products_data:
-            product = Product.objects.get(id=p["id"])
+        for offer_product in offer_products:
+            product = offer_product.product
+            if not product.is_active:
+                continue
+
+            unit_price = offer_product.get_offer_price()
             cart_item, created = CartItem.objects.get_or_create(
                 cart=cart,
                 product=product,
-                defaults={'quantity': 1}
+                defaults={'quantity': 1, 'unit_price': unit_price}
             )
             if not created:
                 cart_item.quantity += 1
+                cart_item.unit_price = resolve_cart_item_unit_price(cart_item, offer.id)
                 cart_item.save()
 
             added_products.append({
                 "id": product.id,
                 "name": product.name,
-                "price": product.final_price
+                "price": float(unit_price),
             })
 
         return JsonResponse({
@@ -217,7 +226,7 @@ def cart_api(request):
             'product_id': ci.product.id,
             'name': ci.product.name,
             'quantity': ci.quantity,
-            'price': float(ci.product.final_price),
+            'price': float(ci.effective_price),
             'subtotal': float(ci.subtotal),
             'is_active': ci.product.is_active,
             'slug': getattr(ci.product, 'slug', ''),
@@ -260,7 +269,7 @@ def api_create_order(request):
                 product=cart_item.product,
                 product_name=cart_item.product.name,
                 quantity=cart_item.quantity,
-                price=cart_item.product.final_price
+                price=cart_item.effective_price
             )
 
         # Generate whatsapp link and clear cart
@@ -327,7 +336,7 @@ def submit_cart(request):
                 product=product,
                 product_name=product.name,
                 quantity=cart_item.quantity,
-                price=product.final_price,
+                price=cart_item.effective_price,
             )
 
         whatsapp_link = order.generate_whatsapp_link()

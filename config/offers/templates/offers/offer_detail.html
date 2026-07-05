@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static l10n %}
 
 {% block full_title %}{{ offer.title }} | Entity Medical{% endblock %}
 
@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="offer-detail-section">
+<section class="offer-detail-section" data-offer-id="{{ offer.id }}">
     <div class="offer-detail-container">
         <a href="{% url 'offers:list' %}" class="back-link">
             <i class="fas fa-arrow-right"></i>
@@ -92,7 +92,7 @@
             <div class="products-grid">
                 {% for offer_product in offer_products %}
                 {% with product=offer_product.product offer_price=offer_product.get_offer_price %}
-                <div class="product-card" data-product-id="{{ product.id }}">
+                <div class="product-card" data-product-id="{{ product.id }}" data-offer-id="{{ offer.id }}">
                     {% if offer.discount_value %}
                     <div class="product-discount-badge">
                         {% if offer.offer_type == "percentage" %}
@@ -137,7 +137,12 @@
                                 عرض التفاصيل
                             </a>
                             <button type="button" class="btn-add-offer-cart"
-                                    onclick="addToCart('{{ product.name|escapejs }}', {{ offer_price }}, '{{ product.icon|escapejs }}', {{ product.id }})">
+                                    data-product-id="{{ product.id }}"
+                                    data-offer-id="{{ offer.id }}"
+                                    data-product-name="{{ product.name|escapejs }}"
+                                    data-product-price="{% localize off %}{{ offer_price }}{% endlocalize %}"
+                                    data-product-icon="{{ product.icon }}"
+                                    onclick="addToCartFromButton(this)">
                                 <i class="fas fa-cart-plus"></i>
                                 أضف للسلة
                             </button>

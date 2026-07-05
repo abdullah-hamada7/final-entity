@@ -48,6 +48,13 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1, verbose_name='الكمية')
+    unit_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name='سعر الوحدة',
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -59,11 +66,17 @@ class CartItem(models.Model):
         return f"{self.product.name} x {self.quantity}"
 
     @property
-    def subtotal(self):
+    def effective_price(self):
+        if self.unit_price is not None:
+            return self.unit_price
         price = getattr(self.product, 'final_price', None)
         if price is None:
             price = getattr(self.product, 'price', 0) or 0
-        return price * (self.quantity or 0)
+        return price
+
+    @property
+    def subtotal(self):
+        return self.effective_price * (self.quantity or 0)
 
 
 # ========================

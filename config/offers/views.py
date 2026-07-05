@@ -10,6 +10,7 @@ from .models import Offer, OfferProduct
 from .utils import build_offers_query
 import json
 from orders.models import Cart, CartItem
+from orders.pricing import get_product_unit_price, resolve_cart_item_unit_price
 
 OFFERS_PER_PAGE = 9
 
@@ -107,13 +108,15 @@ def apply_offer_to_cart(request):
         for offer_product in offer_products:
             product = offer_product.product
             if product.is_active and product.stock > 0:
+                unit_price = offer_product.get_offer_price()
                 cart_item, created = CartItem.objects.get_or_create(
                     cart=cart,
                     product=product,
-                    defaults={'quantity': 1}
+                    defaults={'quantity': 1, 'unit_price': unit_price}
                 )
                 if not created:
                     cart_item.quantity += 1
+                    cart_item.unit_price = resolve_cart_item_unit_price(cart_item, offer.id)
                     cart_item.save()
                 added_products.append(product.name)
 

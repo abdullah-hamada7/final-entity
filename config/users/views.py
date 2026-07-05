@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils.http import url_has_allowed_host_and_scheme
 from .models import CustomUser
-from orders.models import Order
 
 
 def _safe_next_url(request, next_url):
@@ -93,13 +92,7 @@ def profile_view(request):
         messages.success(request, 'تم تحديث الملف الشخصي بنجاح')
         return redirect('users:profile')
 
-    order_count = Order.objects.filter(user=request.user).count()
-    orders = Order.objects.filter(user=request.user).prefetch_related('items')[:20]
-
-    return render(request, 'users/profile.html', {
-        'order_count': order_count,
-        'orders': orders,
-    })
+    return render(request, 'users/profile.html')
 
 
 def reset_password_view(request):

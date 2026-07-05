@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static l10n %}
 
 {% block full_title %}{{ product.name }} | Entity Medical{% endblock %}
 
@@ -119,7 +119,11 @@
                     </a>
 
                     <button type="button" class="add-to-cart-btn"
-                            onclick="addToCart('{{ product.name|escapejs }}', {{ product.final_price }}, '{{ product.icon|escapejs }}', {{ product.id }})">
+                            data-product-id="{{ product.id }}"
+                            data-product-name="{{ product.name|escapejs }}"
+                            data-product-price="{% localize off %}{{ product.final_price }}{% endlocalize %}"
+                            data-product-icon="{{ product.icon }}"
+                            onclick="addToCartFromButton(this)">
                         <i class="fas fa-cart-plus"></i>
                         أضف إلى السلة
                     </button>
