@@ -1,7 +1,7 @@
 /* Auto-generated product data (used by product-details.js) */
 window.PRODUCTS_DATA = {
     'ecg': {
-        categoryUrl: 'medical-devices.html',
+        categoryUrl: '/products/',
         title: 'جهاز تخطيط القلب',
         brand: 'Philips Healthcare',
         price: '150,000 جنيه',
@@ -19,7 +19,7 @@ window.PRODUCTS_DATA = {
         icon: 'fas fa-heartbeat'
     },
     'ventilator': {
-        categoryUrl: 'medical-devices.html',
+        categoryUrl: '/products/',
         title: 'جهاز التنفس الصناعي',
         brand: 'Medtronic',
         price: '450,000 جنيه',
@@ -37,7 +37,7 @@ window.PRODUCTS_DATA = {
         icon: 'fas fa-lungs'
     },
     'stethoscope': {
-        categoryUrl: 'medical-devices.html',
+        categoryUrl: '/products/',
         title: 'سماعة طبية رقمية',
         brand: '3M Littmann',
         price: '25,000 جنيه',
@@ -55,7 +55,7 @@ window.PRODUCTS_DATA = {
         icon: 'fas fa-stethoscope'
     },
     'glucometer': {
-        categoryUrl: 'medical-devices.html',
+        categoryUrl: '/products/',
         title: 'جهاز قياس السكر',
         brand: 'Roche Accu-Chek',
         price: '8,000 جنيه',
@@ -73,7 +73,7 @@ window.PRODUCTS_DATA = {
         icon: 'fas fa-tint'
     },
     'scale': {
-        categoryUrl: 'medical-devices.html',
+        categoryUrl: '/products/',
         title: 'ميزان طبي رقمي',
         brand: 'Tanita',
         price: '12,000 جنيه',
@@ -91,7 +91,7 @@ window.PRODUCTS_DATA = {
         icon: 'fas fa-weight'
     },
     'thermometer': {
-        categoryUrl: 'medical-devices.html',
+        categoryUrl: '/products/',
         title: 'مقياس حرارة رقمي',
         brand: 'Braun',
         price: '3,000 جنيه',
@@ -109,7 +109,7 @@ window.PRODUCTS_DATA = {
         icon: 'fas fa-thermometer-half'
     },
     'blood-pressure': {
-        categoryUrl: 'medical-devices.html',
+        categoryUrl: '/products/',
         title: 'جهاز قياس ضغط الدم',
         brand: 'Omron',
         price: '15,000 جنيه',

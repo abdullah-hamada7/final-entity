@@ -80,12 +80,12 @@
     }
   }
 
-  function showCartNotification() {
+  function showCartNotification(message = 'تم إضافة المنتج للسلة') {
     const notification = document.createElement('div');
     notification.className = 'cart-notification';
     notification.innerHTML = `
       <i class="fas fa-check-circle"></i>
-      <span>تم إضافة المنتج للسلة</span>
+      <span>${message}</span>
     `;
     document.body.appendChild(notification);
 
@@ -189,6 +189,49 @@
     });
   }
 
+  function addAllToCart() {
+    const productCards = document.querySelectorAll('.offer-detail-section .product-card');
+    if (!productCards.length) {
+      alert('لا توجد منتجات لإضافتها');
+      return;
+    }
+
+    let addedCount = 0;
+
+    productCards.forEach((card) => {
+      const nameElement = card.querySelector('h3');
+      const priceElement = card.querySelector('.offer-price');
+      const productId = card.getAttribute('data-product-id');
+
+      if (!nameElement || !priceElement) return;
+
+      const name = nameElement.textContent.trim();
+      const priceText = priceElement.textContent.replace(/[^\d.]/g, '');
+      const price = parseFloat(priceText) || 0;
+
+      const existing = cart.find((item) => item.name === name);
+      if (!existing) {
+        cart.push({
+          name,
+          price,
+          icon: 'fas fa-box',
+          quantity: 1,
+          productId: productId || null
+        });
+        addedCount++;
+      }
+    });
+
+    if (addedCount > 0) {
+      saveCart();
+      updateCartUI();
+      showCartNotification(`تم إضافة ${addedCount} منتج للسلة بنجاح!`);
+      setTimeout(() => toggleCart(), 500);
+    } else {
+      alert('جميع المنتجات موجودة بالفعل في السلة');
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     loadCart();
     updateCartUI();
@@ -205,5 +248,6 @@
   window.clearCart = clearCart;
   window.toggleCart = toggleCart;
   window.checkout = checkout;
+  window.addAllToCart = addAllToCart;
 
 })();

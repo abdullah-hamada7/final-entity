@@ -68,6 +68,8 @@ jobs:
             cd "${APP_DIR}"
             git pull --ff-only origin main
 
+            bash "${PROJECT_DIR}/bin/sync-staticfiles.sh"
+
             source "${VENV_DIR}/bin/activate"
             pip install -r "${APP_DIR}/requirements.txt"
 

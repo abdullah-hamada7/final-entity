@@ -1,5 +1,5 @@
 /* Entity Medical - Premium Clean JS
-   cart.js: shopping cart (load only on pages that include cart modal)
+   cart.js: shopping cart
 */
 (function () {
   'use strict';
@@ -40,7 +40,7 @@
       if (!cart.length) {
         cartItems.innerHTML = `
           <div class="empty-cart">
-            <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+            <i class="fas fa-shopping-cart"></i>
             <p>عربة المشتريات فارغة</p>
           </div>
         `;
@@ -50,19 +50,20 @@
           const qty = Number(item.quantity) || 1;
           const price = Number(item.price) || 0;
           const safeName = String(item.name || '').replace(/'/g, "\\'");
+
           return `
             <div class="cart-item">
-              <div class="item-icon"><i class="${icon}" aria-hidden="true"></i></div>
+              <div class="item-icon"><i class="${icon}"></i></div>
               <div class="item-details">
                 <h4>${item.name}</h4>
                 <p class="item-price">${money(price)} جنيه</p>
               </div>
               <div class="item-controls">
-                <button type="button" onclick="updateQuantity('${safeName}', ${qty - 1})" class="qty-btn" aria-label="تقليل">-</button>
+                <button type="button" onclick="updateQuantity('${safeName}', ${qty - 1})" class="qty-btn">-</button>
                 <span class="qty">${qty}</span>
-                <button type="button" onclick="updateQuantity('${safeName}', ${qty + 1})" class="qty-btn" aria-label="زيادة">+</button>
-                <button type="button" onclick="removeFromCart('${safeName}')" class="remove-btn" aria-label="حذف">
-                  <i class="fas fa-trash" aria-hidden="true"></i>
+                <button type="button" onclick="updateQuantity('${safeName}', ${qty + 1})" class="qty-btn">+</button>
+                <button type="button" onclick="removeFromCart('${safeName}')" class="remove-btn">
+                  <i class="fas fa-trash"></i>
                 </button>
               </div>
             </div>
@@ -72,17 +73,19 @@
     }
 
     if (cartTotal) {
-      const total = cart.reduce((sum, item) => sum + ((Number(item.price) || 0) * (Number(item.quantity) || 0)), 0);
+      const total = cart.reduce((sum, item) =>
+        sum + ((Number(item.price) || 0) * (Number(item.quantity) || 0)), 0
+      );
       cartTotal.textContent = `${money(total)} جنيه`;
     }
   }
 
-  function showCartNotification() {
+  function showCartNotification(message = 'تم إضافة المنتج للسلة') {
     const notification = document.createElement('div');
     notification.className = 'cart-notification';
     notification.innerHTML = `
-      <i class="fas fa-check-circle" aria-hidden="true"></i>
-      <span>تم إضافة المنتج للسلة</span>
+      <i class="fas fa-check-circle"></i>
+      <span>${message}</span>
     `;
     document.body.appendChild(notification);
 
@@ -93,10 +96,35 @@
     }, 2500);
   }
 
+  function showOrderSuccess() {
+    const notification = document.createElement('div');
+    notification.className = 'cart-notification';
+    notification.innerHTML = `
+      <i class="fas fa-check-circle"></i>
+      <span>تم استلام طلبك وسوف يتم التواصل معك قريبًا</span>
+    `;
+    document.body.appendChild(notification);
+
+    setTimeout(() => notification.classList.add('show'), 60);
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => notification.remove(), 250);
+    }, 3000);
+  }
+
   function addToCart(name, price, icon) {
-    const existing = cart.find((item) => item.name === name);
-    if (existing) existing.quantity = (Number(existing.quantity) || 0) + 1;
-    else cart.push({ name, price: Number(price) || 0, icon: icon || 'fas fa-box', quantity: 1 });
+    const existing = cart.find(item => item.name === name);
+
+    if (existing) {
+      existing.quantity = (Number(existing.quantity) || 0) + 1;
+    } else {
+      cart.push({
+        name,
+        price: Number(price) || 0,
+        icon: icon || 'fas fa-box',
+        quantity: 1
+      });
+    }
 
     saveCart();
     updateCartUI();
@@ -104,16 +132,18 @@
   }
 
   function removeFromCart(name) {
-    cart = cart.filter((item) => item.name !== name);
+    cart = cart.filter(item => item.name !== name);
     saveCart();
     updateCartUI();
   }
 
   function updateQuantity(name, newQty) {
-    const item = cart.find((it) => it.name === name);
+    const item = cart.find(it => it.name === name);
     if (!item) return;
+
     const qty = Number(newQty) || 0;
     if (qty <= 0) return removeFromCart(name);
+
     item.quantity = qty;
     saveCart();
     updateCartUI();
@@ -133,49 +163,91 @@
 
   function checkout() {
     if (!cart.length) {
-      alert('عربة المشتريات فارغة');
+      alert("عربة المشتريات فارغة");
       return;
     }
 
-    const total = cart.reduce((sum, item) => sum + ((Number(item.price) || 0) * (Number(item.quantity) || 0)), 0);
-    const itemsList = cart.map((item) => {
-      const qty = Number(item.quantity) || 1;
-      const price = (Number(item.price) || 0) * qty;
-      return `${item.name} (${qty}x) - ${price} جنيه`;
-    }).join('\n');
+    fetch("/orders/submit-cart/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        items: cart
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        clearCart();
+        toggleCart();
+        showOrderSuccess();
+      }
+    })
+    .catch(() => {
+      alert("حدث خطأ أثناء إرسال الطلب");
+    });
+  }
 
-    const message = `طلب جديد من موقع Entity Medical:
+  function addAllToCart() {
+    const productCards = document.querySelectorAll('.offer-detail-section .product-card');
+    if (!productCards.length) {
+      alert('لا توجد منتجات لإضافتها');
+      return;
+    }
 
-المنتجات:
-${itemsList}
+    let addedCount = 0;
 
-المجموع الكلي: ${total} جنيه
+    productCards.forEach((card) => {
+      const nameElement = card.querySelector('h3');
+      const priceElement = card.querySelector('.offer-price');
+      const productId = card.getAttribute('data-product-id');
 
-يرجى التواصل معنا لإتمام الطلب.`;
+      if (!nameElement || !priceElement) return;
 
-    const whatsappUrl = `https://wa.me/201013928114?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+      const name = nameElement.textContent.trim();
+      const priceText = priceElement.textContent.replace(/[^\d.]/g, '');
+      const price = parseFloat(priceText) || 0;
 
-    clearCart();
-    toggleCart();
+      const existing = cart.find((item) => item.name === name);
+      if (!existing) {
+        cart.push({
+          name,
+          price,
+          icon: 'fas fa-box',
+          quantity: 1,
+          productId: productId || null
+        });
+        addedCount++;
+      }
+    });
+
+    if (addedCount > 0) {
+      saveCart();
+      updateCartUI();
+      showCartNotification(`تم إضافة ${addedCount} منتج للسلة بنجاح!`);
+      setTimeout(() => toggleCart(), 500);
+    } else {
+      alert('جميع المنتجات موجودة بالفعل في السلة');
+    }
   }
 
   document.addEventListener('DOMContentLoaded', () => {
     loadCart();
     updateCartUI();
 
-    // Close cart when clicking outside
     document.addEventListener('click', (e) => {
       const cartModal = document.getElementById('cartModal');
       if (cartModal && e.target === cartModal) toggleCart();
     });
   });
 
-  // Expose for inline handlers
   window.addToCart = addToCart;
   window.removeFromCart = removeFromCart;
   window.updateQuantity = updateQuantity;
   window.clearCart = clearCart;
   window.toggleCart = toggleCart;
   window.checkout = checkout;
+  window.addAllToCart = addAllToCart;
+
 })();

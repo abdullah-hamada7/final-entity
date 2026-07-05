@@ -137,15 +137,35 @@ body {
 }
 
 .nav-links a {
+    position: relative;
+    padding: .55rem .75rem;
+    border-radius: 12px;
+    font-weight: 700;
     text-decoration: none;
     color: var(--text-color);
-    font-weight: 500;
     transition: color 0.3s ease;
 }
 
 .nav-links a:hover,
 .nav-links a.active {
     color: var(--secondary-color);
+}
+
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    inset: auto 12px 8px 12px;
+    height: 2px;
+    border-radius: 99px;
+    background: linear-gradient(90deg, transparent, rgba(27, 155, 216, .95), transparent);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform .25s ease;
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+    transform: scaleX(1);
 }
 
 /* القسم الرئيسي */
@@ -2377,30 +2397,6 @@ input:focus-visible {
     border-radius: 12px;
 }
 
-.nav-links a {
-    position: relative;
-    padding: .55rem .75rem;
-    border-radius: 12px;
-    font-weight: 700;
-}
-
-.nav-links a::after {
-    content: "";
-    position: absolute;
-    inset: auto 12px 8px 12px;
-    height: 2px;
-    border-radius: 99px;
-    background: linear-gradient(90deg, transparent, rgba(27, 155, 216, .95), transparent);
-    transform: scaleX(0);
-    transform-origin: center;
-    transition: transform .25s ease;
-}
-
-.nav-links a:hover::after,
-.nav-links a.active::after {
-    transform: scaleX(1);
-}
-
 /* Buttons (global polish) */
 .cta-button,
 .btn-details,
@@ -2897,5 +2893,46 @@ input:focus-visible {
 
 .main-image {
     position: relative;
-    /* Ensure it stays inside main image */
+}
+
+.menu-separator {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 0.5rem 0;
+}
+
+.error-page {
+    padding: 8rem 0;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+}
+
+.error-page-inner {
+    max-width: 780px;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.error-page h1 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+}
+
+.error-page h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.error-page p {
+    margin-bottom: 2rem;
+    color: var(--text-color);
+}
+
+.error-page-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
 }

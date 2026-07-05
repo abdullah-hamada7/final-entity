@@ -26,6 +26,11 @@ urlpatterns = [
         RedirectView.as_view(url="/products/category/surgical-equipment/", permanent=False),
         name="surgical-equipment",
     ),
+    path(
+        "medical-devices/",
+        RedirectView.as_view(pattern_name="products:home", permanent=False),
+        name="medical-devices",
+    ),
 ]
 
 

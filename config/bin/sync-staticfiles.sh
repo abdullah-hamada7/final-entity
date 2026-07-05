@@ -3,4 +3,5 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cp -a "$ROOT/static/css/." "$ROOT/staticfiles/css/"
-echo "Synced static/css -> staticfiles/css"
+cp -a "$ROOT/static/js/." "$ROOT/staticfiles/js/"
+echo "Synced static/css and static/js -> staticfiles/"
