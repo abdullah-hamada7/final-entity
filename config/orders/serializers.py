@@ -21,7 +21,7 @@ class CartItemSerializer(serializers.ModelSerializer):
     product = ProductSimpleSerializer(read_only=True)
     product_id = serializers.IntegerField(write_only=True)
     effective_price = serializers.DecimalField(
-        max_digits=10, decimal_places=2, read_only=True, source='effective_price'
+        max_digits=10, decimal_places=2, read_only=True
     )
     subtotal = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
 
