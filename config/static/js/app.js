@@ -48,32 +48,7 @@
   }
 
   function setupContactForm() {
-    const contactForm = qs('#contactForm');
-    if (!contactForm) return;
-
-    contactForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      const name = qs('#name')?.value || '';
-      const email = qs('#email')?.value || '';
-      const phone = qs('#phone')?.value || '';
-      const subject = qs('#subject')?.value || '';
-      const message = qs('#message')?.value || '';
-
-      const whatsappMessage = `مرحباً، أريد التواصل معكم:
-الاسم: ${name}
-البريد الإلكتروني: ${email}
-الهاتف: ${phone}
-الموضوع: ${subject}
-الرسالة: ${message}`;
-
-      const whatsappUrl = `https://wa.me/201013928114?text=${encodeURIComponent(whatsappMessage)}`;
-
-      const userChoice = window.confirm('تم حفظ رسالتك! هل تريد إرسالها عبر WhatsApp؟');
-      if (userChoice) window.open(whatsappUrl, '_blank');
-
-      contactForm.reset();
-    });
+    // Contact form submits to Django backend; validation handled by validation.js
   }
 
 

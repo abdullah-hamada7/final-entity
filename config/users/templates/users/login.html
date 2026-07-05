@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}تسجيل الدخول - Entity Medical{% endblock %}
+{% block full_title %}تسجيل الدخول - Entity Medical{% endblock %}
 
 {% block body_class %}auth-page{% endblock %}
 
@@ -27,11 +27,11 @@
                 </div>
             {% endif %}
 
-            <form id="loginForm" class="auth-form" method="POST" action="{% url 'users:login' %}">
+            <form id="loginForm" class="auth-form" method="POST" action="{% url 'users:login' %}" novalidate>
                 {% csrf_token %}
                 <div class="input-group">
                     <label for="loginPhone"><i class="fas fa-user-shield"></i> رقم الهاتف</label>
-                    <input type="text" id="loginPhone" name="phone" required placeholder="ادخل رقم الهاتف">
+                    <input type="tel" id="loginPhone" name="phone" required placeholder="010xxxxxxxx" inputmode="tel" pattern="^01[0-9]{9}$">
                 </div>
 
                 <div class="input-group">
@@ -43,7 +43,7 @@
 
                 <div class="auth-links">
                     <a href="{% url 'users:reset_password' %}">نسيت كلمة المرور؟</a>
-                    <span style="margin: 0 10px; opacity: 0.3;">|</span>
+                    <span class="auth-separator">|</span>
                     <a href="{% url 'users:register' %}">إنشاء حساب جديد</a>
                 </div>
             </form>

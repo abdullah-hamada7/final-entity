@@ -3,6 +3,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import CustomUser
+from orders.models import Order
 
 def register_view(request):
     if request.user.is_authenticated:
@@ -67,16 +68,20 @@ def profile_view(request):
         user = request.user
         user.full_name = request.POST.get('full_name', user.full_name)
         user.email = request.POST.get('email', user.email)
-        
+
         new_password = request.POST.get('new_password')
         if new_password:
             user.set_password(new_password)
-        
+
         user.save()
         messages.success(request, 'تم تحديث الملف الشخصي بنجاح')
         return redirect('users:profile')
-    
-    return render(request, 'users/profile.html')
+
+    order_count = Order.objects.filter(user=request.user).count()
+
+    return render(request, 'users/profile.html', {
+        'order_count': order_count,
+    })
 
 
 def reset_password_view(request):

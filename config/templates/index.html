@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Entity Medical - الرئيسية{% endblock %}
+{% block full_title %}Entity Medical - الرئيسية{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/index.css' %}">
@@ -58,24 +58,10 @@
                 {% for category in categories %}
                 <a href="{% url 'products:category' slug=category.slug %}" class="shortcut-card">
                     <div class="shortcut-icon">
-                        {% if category.slug == 'endoscopy' %}
-                            <i class="fas fa-stethoscope"></i>
-                        {% elif category.slug == 'medical-supplies' %}
-                            <i class="fas fa-medkit"></i>
-                        {% elif category.slug == 'surgical-equipment' %}
-                            <i class="fas fa-cut"></i>
-                        {% else %}
-                            <i class="fas fa-folder"></i>
-                        {% endif %}
+                        <i class="{{ category.icon|default:'fas fa-folder' }}"></i>
                     </div>
                     <h3>{{ category.name }}</h3>
-                    <p>
-                        {% if category.slug == 'endoscopy' %}أحدث الأجهزة الطبية والتشخيصية
-                        {% elif category.slug == 'medical-supplies' %}جميع المستلزمات الطبية الأساسية
-                        {% elif category.slug == 'surgical-equipment' %}أدوات جراحية عالية الجودة
-                        {% else %}استكشف الفئة
-                        {% endif %}
-                    </p>
+                    <p>{{ category.description|default:"استكشف الفئة"|truncatewords:12 }}</p>
                 </a>
             {% empty %}
                 <p>لا توجد فئات متاحة حالياً</p>

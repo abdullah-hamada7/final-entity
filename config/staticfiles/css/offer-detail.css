@@ -322,6 +322,27 @@
     background: #1B2848;
 }
 
+.btn-add-offer-cart {
+    flex: 1;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    color: #1B2848;
+    border: none;
+    padding: 1rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-add-offer-cart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 165, 0, 0.35);
+}
+
 .add-all-to-cart {
     text-align: center;
     margin-top: 3rem;

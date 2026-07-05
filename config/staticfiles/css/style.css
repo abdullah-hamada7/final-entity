@@ -1972,21 +1972,6 @@ body.cart-open {
 /* =========================
    Premium Nav (Mobile Menu)
    ========================= */
-.menu-toggle {
-    display: none;
-    border: none;
-    background: transparent;
-    font-size: 1.4rem;
-    color: var(--third-color);
-    cursor: pointer;
-    padding: 0.5rem 0.75rem;
-    border-radius: 10px;
-}
-
-.menu-toggle:hover {
-    background: var(--very-light-blue);
-}
-
 @media (max-width: 768px) {
     :root {
         --navbar-height: 56px;
@@ -1998,12 +1983,6 @@ body.cart-open {
 
     .navbar .container {
         position: relative;
-    }
-
-    .menu-toggle {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
     }
 
     .nav-links {
@@ -2961,4 +2940,72 @@ html.js-reveal .shortcut-card:not(.visible) {
     gap: 1rem;
     justify-content: center;
     flex-wrap: wrap;
+}
+
+.field-error {
+    display: block;
+    margin-top: 0.45rem;
+    color: #b91c1c;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.input-invalid,
+.form-group input.input-invalid,
+.form-group textarea.input-invalid,
+.form-group select.input-invalid,
+.input-group input.input-invalid,
+.checkout-field input.input-invalid {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.auth-separator {
+    margin: 0 10px;
+    opacity: 0.3;
+}
+
+.footer-phone-ltr {
+    direction: ltr;
+    unicode-bidi: bidi-override;
+}
+
+.footer-partner-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.footer-partner-logo {
+    width: 40px;
+    vertical-align: middle;
+}
+
+.checkout-fields {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.checkout-field label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.checkout-field input {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+
+.checkout-field input:focus {
+    outline: none;
+    border-color: var(--secondary-color);
 }

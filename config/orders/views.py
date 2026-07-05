@@ -6,11 +6,8 @@ from django.views.decorators.http import require_POST
 from .models import Cart, CartItem, Order, OrderItem
 from products.models import Product
 import json
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
-from django.http import JsonResponse, HttpResponseForbidden
-from offers.models import Offer, OfferProduct 
-import json
+from offers.models import Offer, OfferProduct
 
 
 def get_or_create_cart(request):
@@ -280,52 +277,85 @@ def api_create_order(request):
     
 
 
-@csrf_exempt
+@require_POST
 def submit_cart(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            items = data.get("items", [])
+    try:
+        data = json.loads(request.body)
+        items = data.get("items", [])
 
-            if not items:
-                return JsonResponse({"success": False, "message": "السلة فارغة"}, status=400)
+        if not items:
+            return JsonResponse({"success": False, "message": "السلة فارغة"}, status=400)
 
-            user = None
-            if request.user.is_authenticated:
-                user = request.user
+        full_name = (data.get("full_name") or "").strip()
+        phone = (data.get("phone") or "").strip()
+        address = (data.get("address") or "").strip()
+        notes = (data.get("notes") or "").strip()
+        email = (data.get("email") or "").strip()
 
-            # إنشاء الطلب
-            order = Order.objects.create(
-                user=user,
-                total_amount=sum([float(item.get("price", 0)) * int(item.get("quantity", 1)) for item in items])
+        user = request.user if request.user.is_authenticated else None
+
+        if user:
+            full_name = full_name or user.full_name
+            phone = phone or user.phone
+            email = email or (user.email or "")
+
+        if not full_name:
+            return JsonResponse({"success": False, "message": "الاسم الكامل مطلوب"}, status=400)
+        if not phone:
+            return JsonResponse({"success": False, "message": "رقم الهاتف مطلوب"}, status=400)
+
+        total_amount = sum([
+            float(item.get("price", 0)) * int(item.get("quantity", 1))
+            for item in items
+        ])
+
+        order = Order.objects.create(
+            user=user,
+            full_name=full_name,
+            phone=phone,
+            email=email,
+            address=address,
+            notes=notes,
+            total_amount=total_amount,
+        )
+
+        for item in items:
+            product_id = item.get("productId") or item.get("product_id")
+            product_name = item.get("name")
+            quantity = int(item.get("quantity", 1))
+            price = float(item.get("price", 0))
+
+            product = None
+            if product_id:
+                product = Product.objects.filter(id=product_id, is_active=True).first()
+
+            OrderItem.objects.create(
+                order=order,
+                product=product,
+                product_name=product_name,
+                quantity=quantity,
+                price=price,
             )
 
-            # إضافة المنتجات
-            for item in items:
-                product_id = item.get("product_id")
-                product_name = item.get("name")
-                quantity = int(item.get("quantity", 1))
-                price = float(item.get("price", 0))
+        whatsapp_link = order.generate_whatsapp_link()
 
-                OrderItem.objects.create(
-                    order=order,
-                    product_id=product_id,  # لو المنتج موجود في الـ DB
-                    product_name=product_name,
-                    quantity=quantity,
-                    price=price
-                )
+        if user:
+            Cart.objects.filter(user=user).delete()
+        else:
+            session_key = request.session.session_key
+            if not session_key:
+                request.session.create()
+            session_key = request.session.session_key
+            Cart.objects.filter(session_key=session_key).delete()
 
-            # مسح السلة
-            if user:
-                Cart.objects.filter(user=user).delete()
-            else:
-                session_key = request.session.session_key
-                if session_key:
-                    Cart.objects.filter(session_key=session_key).delete()
+        return JsonResponse({
+            "success": True,
+            "message": "تم تسجيل الطلب بنجاح",
+            "whatsapp_link": whatsapp_link,
+            "order_number": order.order_number,
+        })
 
-            return JsonResponse({"success": True, "message": "تم تسجيل الطلب بنجاح ✅"})
-
-        except Exception as e:
-            return JsonResponse({"success": False, "message": str(e)}, status=500)
-
-    return JsonResponse({"success": False, "message": "طريقة الطلب غير صحيحة"}, status=405)
+    except json.JSONDecodeError:
+        return JsonResponse({"success": False, "message": "بيانات غير صالحة"}, status=400)
+    except Exception as e:
+        return JsonResponse({"success": False, "message": str(e)}, status=500)

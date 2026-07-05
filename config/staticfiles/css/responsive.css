@@ -628,3 +628,19 @@ body.menu-open {
         grid-template-columns: 1fr;
     }
 }
+
+@media (max-width: 768px) {
+    .search-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-container #searchInput {
+        width: 100%;
+    }
+
+    .search-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

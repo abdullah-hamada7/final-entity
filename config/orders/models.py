@@ -77,12 +77,12 @@ class Order(models.Model):
         ('cancelled', 'ملغي'),
     ]
 
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='orders')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True, related_name='orders')
     order_number = models.CharField(max_length=20, unique=True, verbose_name='رقم الطلب')
     full_name = models.CharField(max_length=255, verbose_name='الاسم الكامل')
     phone = models.CharField(max_length=15, verbose_name='رقم الهاتف')
     email = models.EmailField(blank=True, verbose_name='البريد الإلكتروني')
-    address = models.TextField(verbose_name='العنوان')
+    address = models.TextField(blank=True, default='', verbose_name='العنوان')
     notes = models.TextField(blank=True, verbose_name='ملاحظات')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name='الحالة')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='المبلغ الإجمالي', default=0)
@@ -96,7 +96,9 @@ class Order(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"طلب #{self.order_number} - {self.user.full_name}"
+        if self.user:
+            return f"طلب #{self.order_number} - {self.user.full_name}"
+        return f"طلب #{self.order_number} - {self.full_name}"
 
     def save(self, *args, **kwargs):
         """توليد رقم الطلب تلقائيًا"""
@@ -122,12 +124,13 @@ class Order(models.Model):
     def generate_whatsapp_link(self):
         """توليد رابط واتساب للطلب"""
         company_phone = '+201013928114'
-        message = f"طلب جديد من Entity Medical\n"
+        message = "طلب جديد من Entity Medical\n"
         message += f"رقم الطلب: {self.order_number}\n"
         message += f"الاسم: {self.full_name}\n"
         message += f"الهاتف: {self.phone}\n"
-        message += f"العنوان: {self.address}\n\n"
-        message += "تفاصيل الطلب:\n"
+        if self.address:
+            message += f"العنوان: {self.address}\n"
+        message += "\nتفاصيل الطلب:\n"
 
         for item in self.items.all():
             message += f"• {item.product_name} x {item.quantity} = {item.subtotal} جنيه\n"

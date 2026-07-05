@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}المنتجات - Entity Medical{% endblock %}
+{% block full_title %}المنتجات - Entity Medical{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/products.css' %}">
@@ -106,5 +106,8 @@
             </div>
             {% endif %}
         </div>
-    </section>
+
+        {% include 'partials/pagination.html' %}
+    </div>
+</section>
 {% endblock %}

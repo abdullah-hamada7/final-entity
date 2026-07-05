@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}منتجات - {{ category.name }}{% endblock %}
+{% block full_title %}منتجات - {{ category.name }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/products.css' %}">
@@ -106,5 +106,7 @@
         </div>
         {% endif %}
     </div>
+
+    {% include 'partials/pagination.html' %}
 </section>
 {% endblock %}

@@ -120,7 +120,7 @@
     }, 3000);
   }
 
-  function addToCart(name, price, icon) {
+  function addToCart(name, price, icon, productId) {
     const existing = cart.find(item => item.name === name);
 
     if (existing) {
@@ -130,6 +130,7 @@
         name,
         price: Number(price) || 0,
         icon: (typeof icon === 'string' && icon) ? icon : 'fas fa-box',
+        productId: productId || null,
         quantity: 1
       });
     }
@@ -175,6 +176,7 @@
       previousFocus = document.activeElement;
       cartModal.classList.add('active');
       document.body.classList.add('cart-open');
+      prefillCheckoutFields();
       const closeBtn = cartModal.querySelector('.close-cart');
       closeBtn?.focus();
     } else {
@@ -187,10 +189,45 @@
     }
   }
 
+  function prefillCheckoutFields() {
+    const body = document.body;
+    const nameInput = document.getElementById('checkoutName');
+    const phoneInput = document.getElementById('checkoutPhone');
+    if (!nameInput || !phoneInput) return;
+
+    if (body.dataset.auth === 'true') {
+      if (!nameInput.value) nameInput.value = body.dataset.userName || '';
+      if (!phoneInput.value) phoneInput.value = body.dataset.userPhone || '';
+    }
+  }
+
   function checkout() {
     if (!cart.length) {
       alert("عربة المشتريات فارغة");
       return;
+    }
+
+    prefillCheckoutFields();
+
+    const nameInput = document.getElementById('checkoutName');
+    const phoneInput = document.getElementById('checkoutPhone');
+    const addressInput = document.getElementById('checkoutAddress');
+    const validation = window.EntityValidation;
+
+    if (validation) {
+      validation.clearFormErrors(document.getElementById('checkoutFields'));
+      let msg = validation.validateName(nameInput?.value);
+      if (msg) {
+        validation.showError(nameInput, msg);
+        nameInput.focus();
+        return;
+      }
+      msg = validation.validatePhone(phoneInput?.value, true);
+      if (msg) {
+        validation.showError(phoneInput, msg);
+        phoneInput.focus();
+        return;
+      }
     }
 
     const headers = {
@@ -206,7 +243,11 @@
       headers,
       credentials: "same-origin",
       body: JSON.stringify({
-        items: cart
+        items: cart,
+        full_name: nameInput?.value?.trim(),
+        phone: validation ? validation.normalizePhone(phoneInput?.value) : phoneInput?.value?.trim(),
+        address: addressInput?.value?.trim() || '',
+        email: document.body.dataset.userEmail || '',
       })
     })
     .then(res => res.json())
@@ -215,6 +256,9 @@
         clearCart();
         toggleCart(false);
         showOrderSuccess();
+        if (data.whatsapp_link) {
+          setTimeout(() => window.open(data.whatsapp_link, '_blank'), 800);
+        }
       } else {
         alert(data.message || "حدث خطأ أثناء إرسال الطلب");
       }

@@ -28,7 +28,7 @@ urlpatterns = [
     ),
     path(
         "medical-devices/",
-        RedirectView.as_view(pattern_name="products:home", permanent=False),
+        RedirectView.as_view(url="/products/category/medical-supplies/", permanent=False),
         name="medical-devices",
     ),
 ]

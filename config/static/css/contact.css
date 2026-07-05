@@ -124,6 +124,11 @@
     text-align: right;
 }
 
+.contact-messages {
+    max-width: 900px;
+    margin: 0 auto 2rem;
+}
+
 
 
 
