@@ -1,11 +1,21 @@
 /* Entity Medical - Premium Clean JS
-   cart.js: shopping cart
+   cart.js: shopping cart (synced with backend API)
 */
 (function () {
   'use strict';
 
+  const API = {
+    cart: '/orders/api/cart/',
+    add: '/orders/api/cart/add/',
+    update: '/orders/api/cart/update/',
+    remove: '/orders/api/cart/remove/',
+    clear: '/orders/api/cart/clear/',
+    checkout: '/orders/api/orders/create/',
+  };
+
   let cart = [];
   let previousFocus = null;
+  let cartReady = false;
 
   function isLoggedIn() {
     return document.body?.dataset.auth === 'true';
@@ -31,13 +41,10 @@
   }
 
   function redirectToLogin(message) {
-    if (message) {
-      notify(message, 'warning');
-    }
-    const delay = message ? 1200 : 0;
+    if (message) notify(message, 'warning');
     setTimeout(() => {
       window.location.href = getLoginUrl();
-    }, delay);
+    }, message ? 1200 : 0);
   }
 
   function getCsrfToken() {
@@ -47,24 +54,91 @@
     return match ? decodeURIComponent(match[1]) : '';
   }
 
-  function loadCart() {
-    try {
-      const saved = localStorage.getItem('medicalCart');
-      cart = saved ? JSON.parse(saved) : [];
-      if (!Array.isArray(cart)) cart = [];
-    } catch (_e) {
-      cart = [];
-    }
-  }
-
-  function saveCart() {
-    localStorage.setItem('medicalCart', JSON.stringify(cart));
-  }
-
   function money(n) {
     const num = Number(n || 0);
     if (!Number.isFinite(num)) return '0';
-    return String(num);
+    return String(Math.round(num));
+  }
+
+  function applyCartPayload(cartData) {
+    if (!cartData?.items) {
+      cart = [];
+      return;
+    }
+
+    cart = cartData.items.map((item) => ({
+      cartItemId: item.id,
+      productId: item.product?.id,
+      name: item.product?.name || '',
+      price: Number(item.product?.final_price ?? item.product?.price ?? 0),
+      icon: item.product?.icon || 'fas fa-box',
+      quantity: Number(item.quantity) || 1,
+    }));
+  }
+
+  async function apiRequest(url, method, body) {
+    const headers = { 'Content-Type': 'application/json' };
+    const csrfToken = getCsrfToken();
+    if (csrfToken) headers['X-CSRFToken'] = csrfToken;
+
+    const options = {
+      method,
+      headers,
+      credentials: 'same-origin',
+    };
+
+    if (body !== undefined) {
+      options.body = JSON.stringify(body);
+    }
+
+    const response = await fetch(url, options);
+    const data = await response.json().catch(() => ({}));
+    return { ok: response.ok, status: response.status, data };
+  }
+
+  async function syncCartFromServer() {
+    const { ok, data } = await apiRequest(API.cart, 'GET');
+    if (ok && data.success && data.cart) {
+      applyCartPayload(data.cart);
+      return true;
+    }
+    cart = [];
+    return false;
+  }
+
+  async function migrateLocalStorageCart() {
+    let saved = null;
+    try {
+      saved = localStorage.getItem('medicalCart');
+    } catch (_e) {
+      return;
+    }
+
+    if (!saved) return;
+
+    let legacyItems = [];
+    try {
+      legacyItems = JSON.parse(saved);
+    } catch (_e) {
+      localStorage.removeItem('medicalCart');
+      return;
+    }
+
+    if (!Array.isArray(legacyItems) || !legacyItems.length) {
+      localStorage.removeItem('medicalCart');
+      return;
+    }
+
+    for (const item of legacyItems) {
+      const productId = item.productId || item.product_id;
+      if (!productId) continue;
+      await apiRequest(API.add, 'POST', {
+        product_id: productId,
+        quantity: Number(item.quantity) || 1,
+      });
+    }
+
+    localStorage.removeItem('medicalCart');
   }
 
   function updateCheckoutButton() {
@@ -87,7 +161,7 @@
 
     if (cartCounts.length) {
       const totalItems = cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
-      cartCounts.forEach(el => el.textContent = String(totalItems));
+      cartCounts.forEach((el) => { el.textContent = String(totalItems); });
     }
 
     if (cartItems) {
@@ -103,7 +177,7 @@
           const icon = item.icon || 'fas fa-box';
           const qty = Number(item.quantity) || 1;
           const price = Number(item.price) || 0;
-          const safeName = String(item.name || '').replace(/'/g, "\\'");
+          const itemId = Number(item.cartItemId);
 
           return `
             <div class="cart-item">
@@ -113,10 +187,10 @@
                 <p class="item-price">${money(price)} جنيه</p>
               </div>
               <div class="item-controls">
-                <button type="button" onclick="updateQuantity('${safeName}', ${qty - 1})" class="qty-btn" aria-label="تقليل الكمية">-</button>
+                <button type="button" onclick="updateQuantity(${itemId}, ${qty - 1})" class="qty-btn" aria-label="تقليل الكمية">-</button>
                 <span class="qty">${qty}</span>
-                <button type="button" onclick="updateQuantity('${safeName}', ${qty + 1})" class="qty-btn" aria-label="زيادة الكمية">+</button>
-                <button type="button" onclick="removeFromCart('${safeName}')" class="remove-btn" aria-label="حذف المنتج">
+                <button type="button" onclick="updateQuantity(${itemId}, ${qty + 1})" class="qty-btn" aria-label="زيادة الكمية">+</button>
+                <button type="button" onclick="removeFromCart(${itemId})" class="remove-btn" aria-label="حذف المنتج">
                   <i class="fas fa-trash"></i>
                 </button>
               </div>
@@ -128,8 +202,7 @@
 
     if (cartTotal) {
       const total = cart.reduce((sum, item) =>
-        sum + ((Number(item.price) || 0) * (Number(item.quantity) || 0)), 0
-      );
+        sum + ((Number(item.price) || 0) * (Number(item.quantity) || 0)), 0);
       cartTotal.textContent = `${money(total)} جنيه`;
     }
 
@@ -144,48 +217,67 @@
     notify('تم استلام طلبك وسوف يتم التواصل معك قريبًا', 'success', 3000);
   }
 
-  function addToCart(name, price, icon, productId) {
-    const existing = cart.find(item => item.name === name);
-
-    if (existing) {
-      existing.quantity = (Number(existing.quantity) || 0) + 1;
-    } else {
-      cart.push({
-        name,
-        price: Number(price) || 0,
-        icon: (typeof icon === 'string' && icon) ? icon : 'fas fa-box',
-        productId: productId || null,
-        quantity: 1
-      });
+  async function addToCart(name, price, icon, productId) {
+    if (!productId) {
+      notify('لا يمكن إضافة هذا المنتج', 'error');
+      return;
     }
 
-    saveCart();
-    updateCartUI();
-    showCartNotification();
+    const { ok, data } = await apiRequest(API.add, 'POST', {
+      product_id: productId,
+      quantity: 1,
+    });
+
+    if (ok && data.success && data.cart) {
+      applyCartPayload(data.cart);
+      updateCartUI();
+      showCartNotification();
+      return;
+    }
+
+    notify(data.message || data.errors?.product_id?.[0] || 'فشل إضافة المنتج', 'error');
   }
 
-  function removeFromCart(name) {
-    cart = cart.filter(item => item.name !== name);
-    saveCart();
-    updateCartUI();
+  async function removeFromCart(cartItemId) {
+    const { ok, data } = await apiRequest(API.remove, 'DELETE', { item_id: cartItemId });
+
+    if (ok && data.success && data.cart) {
+      applyCartPayload(data.cart);
+      updateCartUI();
+      return;
+    }
+
+    notify(data.message || 'فشل حذف المنتج', 'error');
   }
 
-  function updateQuantity(name, newQty) {
-    const item = cart.find(it => it.name === name);
-    if (!item) return;
-
+  async function updateQuantity(cartItemId, newQty) {
     const qty = Number(newQty) || 0;
-    if (qty <= 0) return removeFromCart(name);
 
-    item.quantity = qty;
-    saveCart();
-    updateCartUI();
+    const { ok, data } = await apiRequest(API.update, 'PUT', {
+      item_id: cartItemId,
+      quantity: qty,
+    });
+
+    if (ok && data.success && data.cart) {
+      applyCartPayload(data.cart);
+      updateCartUI();
+      return;
+    }
+
+    notify(data.message || 'فشل تحديث الكمية', 'error');
   }
 
-  function clearCart() {
-    cart = [];
-    saveCart();
-    updateCartUI();
+  async function clearCart() {
+    const { ok, data } = await apiRequest(API.clear, 'POST');
+
+    if (ok && data.success) {
+      cart = [];
+      updateCartUI();
+      notify('تم تفريغ السلة', 'info');
+      return;
+    }
+
+    notify(data.message || 'فشل تفريغ السلة', 'error');
   }
 
   function toggleCart(forceOpen) {
@@ -201,8 +293,7 @@
       cartModal.classList.add('active');
       document.body.classList.add('cart-open');
       updateCheckoutButton();
-      const closeBtn = cartModal.querySelector('.close-cart');
-      closeBtn?.focus();
+      cartModal.querySelector('.close-cart')?.focus();
     } else {
       cartModal.classList.remove('active');
       document.body.classList.remove('cart-open');
@@ -222,10 +313,11 @@
       phone: validation ? validation.normalizePhone(body.dataset.userPhone) : (body.dataset.userPhone || ''),
       email: body.dataset.userEmail || '',
       address: '',
+      notes: '',
     };
   }
 
-  function checkout() {
+  async function checkout() {
     if (!cart.length) {
       notify('عربة المشتريات فارغة', 'warning');
       return;
@@ -237,53 +329,28 @@
     }
 
     const details = getCheckoutDetails();
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-    const csrfToken = getCsrfToken();
-    if (csrfToken) {
-      headers['X-CSRFToken'] = csrfToken;
+    const { ok, status, data } = await apiRequest(API.checkout, 'POST', details);
+
+    if (status === 401 || status === 403) {
+      redirectToLogin('يجب تسجيل الدخول لإتمام الطلب');
+      return;
     }
 
-    fetch('/orders/submit-cart/', {
-      method: 'POST',
-      headers,
-      credentials: 'same-origin',
-      body: JSON.stringify({
-        items: cart,
-        full_name: details.full_name,
-        phone: details.phone,
-        address: details.address,
-        email: details.email,
-      })
-    })
-    .then(async (res) => {
-      const data = await res.json().catch(() => ({}));
-      if (res.status === 401 && data.login_required) {
-        redirectToLogin(data.message || 'يجب تسجيل الدخول لإتمام الطلب');
-        return null;
+    if (ok && data.success) {
+      cart = [];
+      updateCartUI();
+      toggleCart(false);
+      showOrderSuccess();
+      if (data.whatsapp_link) {
+        setTimeout(() => window.open(data.whatsapp_link, '_blank'), 800);
       }
-      return data;
-    })
-    .then((data) => {
-      if (!data) return;
-      if (data.success) {
-        clearCart();
-        toggleCart(false);
-        showOrderSuccess();
-        if (data.whatsapp_link) {
-          setTimeout(() => window.open(data.whatsapp_link, '_blank'), 800);
-        }
-      } else {
-        notify(data.message || 'حدث خطأ أثناء إرسال الطلب', 'error');
-      }
-    })
-    .catch(() => {
-      notify('حدث خطأ أثناء إرسال الطلب', 'error');
-    });
+      return;
+    }
+
+    notify(data.message || 'حدث خطأ أثناء إرسال الطلب', 'error');
   }
 
-  function addAllToCart() {
+  async function addAllToCart() {
     const productCards = document.querySelectorAll('.offer-detail-section .product-card');
     if (!productCards.length) {
       notify('لا توجد منتجات لإضافتها', 'warning');
@@ -292,33 +359,29 @@
 
     let addedCount = 0;
 
-    productCards.forEach((card) => {
-      const nameElement = card.querySelector('h3');
-      const priceElement = card.querySelector('.offer-price');
+    for (const card of productCards) {
       const productId = card.getAttribute('data-product-id');
+      if (!productId) continue;
 
-      if (!nameElement || !priceElement) return;
+      const nameElement = card.querySelector('h3');
+      const name = nameElement?.textContent?.trim() || '';
+      const alreadyInCart = cart.some((item) => item.name === name);
+      if (alreadyInCart) continue;
 
-      const name = nameElement.textContent.trim();
-      const priceText = priceElement.textContent.replace(/[^\d.]/g, '');
-      const price = parseFloat(priceText) || 0;
+      const { ok, data } = await apiRequest(API.add, 'POST', {
+        product_id: Number(productId),
+        quantity: 1,
+      });
 
-      const existing = cart.find((item) => item.name === name);
-      if (!existing) {
-        cart.push({
-          name,
-          price,
-          icon: 'fas fa-box',
-          quantity: 1,
-          productId: productId || null
-        });
-        addedCount++;
+      if (ok && data.success && data.cart) {
+        applyCartPayload(data.cart);
+        addedCount += 1;
       }
-    });
+    }
+
+    updateCartUI();
 
     if (addedCount > 0) {
-      saveCart();
-      updateCartUI();
       showCartNotification(`تم إضافة ${addedCount} منتج للسلة بنجاح!`);
       setTimeout(() => toggleCart(true), 500);
     } else {
@@ -347,9 +410,19 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    loadCart();
+  async function initCart() {
+    await syncCartFromServer();
+    await migrateLocalStorageCart();
+    await syncCartFromServer();
+    cartReady = true;
     updateCartUI();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initCart().catch(() => {
+      cart = [];
+      updateCartUI();
+    });
 
     document.addEventListener('click', (e) => {
       const cartModal = document.getElementById('cartModal');

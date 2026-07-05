@@ -60,10 +60,10 @@ class CartItem(models.Model):
 
     @property
     def subtotal(self):
-        """السعر الكلي = سعر المنتج × الكمية"""
-        price = getattr(self.product, 'price', 0) or 0
-        quantity = self.quantity or 0
-        return price * quantity
+        price = getattr(self.product, 'final_price', None)
+        if price is None:
+            price = getattr(self.product, 'price', 0) or 0
+        return price * (self.quantity or 0)
 
 
 # ========================

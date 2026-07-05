@@ -1893,6 +1893,77 @@ body.cart-open {
     font-size: 1.2rem;
 }
 
+/* App toast notifications (replaces browser alert dialogs) */
+.app-toast {
+    position: fixed;
+    top: 100px;
+    inset-inline-end: 20px;
+    max-width: min(92vw, 420px);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    z-index: 10001;
+    transform: translateX(-400px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+[dir="rtl"] .app-toast {
+    transform: translateX(400px);
+}
+
+.app-toast.show {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.app-toast i {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.app-toast--success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+}
+
+.app-toast--error {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    box-shadow: 0 10px 30px rgba(220, 53, 69, 0.3);
+}
+
+.app-toast--warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+}
+
+.app-toast--info {
+    background: linear-gradient(135deg, #1b9bd8 0%, #2563eb 100%);
+    box-shadow: 0 10px 30px rgba(27, 155, 216, 0.3);
+}
+
+@media (max-width: 768px) {
+    .app-toast {
+        top: auto;
+        bottom: 1.25rem;
+        inset-inline-end: 1rem;
+        inset-inline-start: 1rem;
+        max-width: none;
+        transform: translateY(120%);
+    }
+
+    .app-toast.show {
+        transform: translateY(0);
+    }
+}
+
 /* Fallback Logo Styles */
 .fallback-logo {
     width: 100%;

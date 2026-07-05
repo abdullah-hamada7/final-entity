@@ -543,3 +543,126 @@
         padding: 0.5rem;
     }
 }
+
+/* Product reviews */
+.product-reviews {
+    margin-top: 3rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 25px;
+    border: 2px solid rgba(255, 215, 0, 0.35);
+    box-shadow: 0 10px 30px rgba(27, 40, 72, 0.08);
+}
+
+.reviews-header h2 {
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+}
+
+.reviews-summary {
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+}
+
+.review-form-box {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(27, 155, 216, 0.15);
+}
+
+.review-form-box h3 {
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+
+.rating-input {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.rating-star {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+    border-radius: 12px;
+    border: 2px solid var(--light-blue);
+    transition: all 0.2s ease;
+}
+
+.rating-star input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.rating-star i {
+    color: #f59e0b;
+    font-size: 1.2rem;
+}
+
+.rating-star:has(input:checked),
+.rating-star:hover {
+    border-color: var(--gold);
+    background: rgba(255, 215, 0, 0.1);
+}
+
+.rating-input.input-invalid,
+.rating-input:has(.field-error) {
+    padding-bottom: 1.5rem;
+}
+
+.review-login-prompt {
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+}
+
+.review-login-prompt a {
+    color: var(--secondary-color);
+    font-weight: 700;
+}
+
+.reviews-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.review-card {
+    padding: 1.25rem;
+    border-radius: 16px;
+    background: rgba(27, 155, 216, 0.06);
+    border: 1px solid rgba(27, 155, 216, 0.12);
+}
+
+.review-card-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.review-stars i {
+    color: #f59e0b;
+}
+
+.review-card p {
+    margin: 0 0 0.5rem;
+    line-height: 1.6;
+}
+
+.review-card time {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.reviews-empty {
+    color: var(--text-color);
+    text-align: center;
+    padding: 1rem 0;
+}

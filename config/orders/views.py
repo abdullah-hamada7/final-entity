@@ -293,12 +293,56 @@ def submit_cart(request):
 
     try:
         data = json.loads(request.body)
+        user = request.user
+        db_cart = get_or_create_cart(request)
+
+        if db_cart.items.exists():
+            full_name = (data.get("full_name") or "").strip() or user.full_name
+            phone = (data.get("phone") or "").strip() or user.phone
+            address = (data.get("address") or "").strip()
+            notes = (data.get("notes") or "").strip()
+            email = (data.get("email") or "").strip() or (user.email or "")
+
+            if not full_name:
+                return JsonResponse({"success": False, "message": "الاسم الكامل مطلوب"}, status=400)
+            if not phone:
+                return JsonResponse({"success": False, "message": "رقم الهاتف مطلوب"}, status=400)
+
+            order = Order.objects.create(
+                user=user,
+                full_name=full_name,
+                phone=phone,
+                email=email,
+                address=address,
+                notes=notes,
+                total_amount=db_cart.total_price,
+            )
+
+            for cart_item in db_cart.items.select_related('product'):
+                product = cart_item.product
+                OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    product_name=product.name,
+                    quantity=cart_item.quantity,
+                    price=product.final_price,
+                )
+
+            whatsapp_link = order.generate_whatsapp_link()
+            db_cart.items.all().delete()
+
+            return JsonResponse({
+                "success": True,
+                "message": "تم تسجيل الطلب بنجاح",
+                "whatsapp_link": whatsapp_link,
+                "order_number": order.order_number,
+            })
+
         items = data.get("items", [])
 
         if not items:
             return JsonResponse({"success": False, "message": "السلة فارغة"}, status=400)
 
-        user = request.user
         full_name = (data.get("full_name") or "").strip() or user.full_name
         phone = (data.get("phone") or "").strip() or user.phone
         address = (data.get("address") or "").strip()
@@ -344,7 +388,6 @@ def submit_cart(request):
             )
 
         whatsapp_link = order.generate_whatsapp_link()
-
         Cart.objects.filter(user=user).delete()
 
         return JsonResponse({

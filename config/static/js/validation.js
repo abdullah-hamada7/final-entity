@@ -12,7 +12,7 @@
   }
 
   function fieldContainer(input) {
-    return input?.closest('.input-group, .form-group, .checkout-field, .search-container');
+    return input?.closest('.input-group, .form-group, .checkout-field, .search-container, .rating-input');
   }
 
   function showError(input, message) {
@@ -234,14 +234,38 @@
     });
   }
 
-  function setupSearchForms() {
+    function setupSearchForms() {
     bindSearchForm(document.getElementById('productsSearchForm'), '#searchInput');
     bindSearchForm(document.getElementById('categorySearchForm'), '#categorySearchInput');
+  }
+
+  function validateReviewRating(form) {
+    const selected = form.querySelector('input[name="rating"]:checked');
+    if (!selected) return 'اختر تقييمًا من 1 إلى 5';
+    return null;
+  }
+
+  function setupReviewForm() {
+    bindForm(document.getElementById('reviewForm'), (form) => {
+      const comment = form.querySelector('#reviewComment');
+      let msg = validateReviewRating(form);
+      if (msg) {
+        const group = form.querySelector('#reviewRatingGroup');
+        return fail(group, msg);
+      }
+      msg = validateMessage(comment?.value, 3);
+      if (msg) return fail(comment, msg);
+      if (String(comment?.value || '').trim().length > 1000) {
+        return fail(comment, 'التعليق طويل جدًا');
+      }
+      return true;
+    });
   }
 
   function initValidation() {
     setupAuthForms();
     setupSearchForms();
+    setupReviewForm();
   }
 
   document.addEventListener('DOMContentLoaded', initValidation);

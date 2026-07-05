@@ -44,16 +44,9 @@ class AddToCartAPIView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        # طباعة البيانات المستلمة للتحقق
-        print("=" * 50)
-        print("Request Data:", request.data)
-        print("Request Body:", request.body)
-        print("=" * 50)
-        
         serializer = AddToCartSerializer(data=request.data)
-        
+
         if not serializer.is_valid():
-            print("Validation Errors:", serializer.errors)  # طباعة الأخطاء
             return Response({
                 'success': False,
                 'errors': serializer.errors
@@ -85,9 +78,6 @@ class AddToCartAPIView(APIView):
             }, status=status.HTTP_201_CREATED)
 
         except Exception as e:
-            print("Exception:", str(e))  # طباعة الخطأ
-            import traceback
-            traceback.print_exc()
             return Response({
                 'success': False,
                 'message': str(e)

@@ -67,6 +67,18 @@
     data-user-name="{% if user.is_authenticated %}{{ user.full_name|escapejs }}{% endif %}"
     data-user-phone="{% if user.is_authenticated %}{{ user.phone|escapejs }}{% endif %}"
     data-user-email="{% if user.is_authenticated %}{{ user.email|default:''|escapejs }}{% endif %}">
+    {% if messages %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      {% for message in messages %}
+      window.EntityNotify?.show(
+        "{{ message|escapejs }}",
+        "{% if 'error' in message.tags %}error{% elif 'success' in message.tags %}success{% elif 'warning' in message.tags %}warning{% else %}info{% endif %}"
+      );
+      {% endfor %}
+    });
+    </script>
+    {% endif %}
     <nav class="navbar">
         <div class="container">
             <div class="logo">

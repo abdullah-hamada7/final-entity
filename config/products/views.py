@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from django.db.models import Q
+from django.db.models import Q, F, Avg
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Category, Product, Review
 from .utils import build_products_query
@@ -76,19 +76,34 @@ def products_list(request):
 
 
 def product_detail(request, slug):
-    product = get_object_or_404(Product, slug=slug, is_active=True)
+    product = get_object_or_404(
+        Product.objects.select_related('category', 'brand').prefetch_related('images', 'features'),
+        slug=slug,
+        is_active=True,
+    )
 
+    Product.objects.filter(pk=product.pk).update(views=F('views') + 1)
     product.views += 1
-    product.save(update_fields=['views'])
 
-    related_products = Product.objects.filter(
+    related_products = active_products_queryset().filter(
         category=product.category,
-        is_active=True
     ).exclude(id=product.id)[:4]
+
+    reviews = product.reviews.select_related('user').all()[:20]
+    user_review = None
+    if request.user.is_authenticated:
+        user_review = product.reviews.filter(user=request.user).first()
+
+    rating_stats = product.reviews.aggregate(avg=Avg('rating'))
+    avg_rating = rating_stats['avg']
 
     context = {
         'product': product,
         'related_products': related_products,
+        'reviews': reviews,
+        'user_review': user_review,
+        'avg_rating': avg_rating,
+        'review_count': product.reviews.count(),
     }
     return render(request, 'products/product_details.html', context)
 
@@ -141,6 +156,10 @@ def add_review(request, product_id):
 
         if len(comment) < 3:
             messages.error(request, 'التعليق قصير جدًا')
+            return redirect('products:detail', slug=product.slug)
+
+        if len(comment) > 1000:
+            messages.error(request, 'التعليق طويل جدًا')
             return redirect('products:detail', slug=product.slug)
 
         Review.objects.update_or_create(
