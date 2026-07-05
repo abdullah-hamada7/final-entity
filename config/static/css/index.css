@@ -113,7 +113,7 @@
     height: 0;
     border-left: 0.1em solid transparent;
     border-right: 0.1em solid transparent;
-    border-top: 0.23125em solid var(--secondary-color);
+    border-top: 0.23125em solid #000;
 }
 
 .hero p {
