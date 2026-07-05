@@ -86,6 +86,8 @@
     const body = document.body;
     const mobileMenuLinks = qsa('.mobile-menu a');
 
+    if (body) body.classList.remove('menu-open');
+
     if (hamburger && mobileMenu) {
       hamburger.addEventListener('click', () => {
         hamburger.classList.toggle('active');

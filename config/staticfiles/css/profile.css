@@ -3,14 +3,14 @@
    ========================= */
 
 .profile-section {
-    padding-top: 100px;
+    padding-top: 2rem;
     padding-bottom: 3rem;
     min-height: 100vh;
 }
 
 @media (max-width: 600px) {
     .profile-section {
-        padding-top: 80px;
+        padding-top: 1.5rem;
         padding-bottom: 2rem;
     }
 }
