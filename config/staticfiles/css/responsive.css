@@ -506,10 +506,6 @@ body.menu-open {
 
     /* Medium Phones */
     @media (max-width: 576px) {
-        .hero h1 {
-            font-size: 1.8rem;
-        }
-
         .features h2,
         .shortcuts h2 {
             font-size: 1.7rem;
@@ -525,10 +521,6 @@ body.menu-open {
         .logo img {
             height: 36px;
             width: 36px;
-        }
-
-        .hero h1 {
-            font-size: 1.6rem;
         }
 
         .hero p {
@@ -561,10 +553,6 @@ body.menu-open {
 
     /* Extra Small Phones */
     @media (max-width: 375px) {
-        .hero h1 {
-            font-size: 1.4rem;
-        }
-
         .features h2,
         .shortcuts h2 {
             font-size: 1.3rem;

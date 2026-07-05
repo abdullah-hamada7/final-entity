@@ -50,6 +50,7 @@
     margin-bottom: 1.5rem;
     font-weight: 900;
     background: #fff;
+    background-color: #fff;
     padding: 1rem 2rem;
     border-radius: 10px;
     letter-spacing: 2px;
@@ -57,6 +58,7 @@
     position: relative;
     filter: none;
     display: inline-block;
+    opacity: 1;
 }
 
 
@@ -64,10 +66,11 @@
 .hero #title {
     color: var(--secondary-color);
     font-weight: 900;
-    background: none;
-    -webkit-background-clip: unset;
-    -webkit-text-fill-color: unset;
-    background-clip: unset;
+    background: #fff;
+    background-color: #fff;
+    -webkit-background-clip: border-box;
+    -webkit-text-fill-color: currentColor;
+    background-clip: border-box;
     letter-spacing: 2px;
     text-transform: uppercase;
     filter: none;
