@@ -129,6 +129,52 @@
 
         </div>
 
+        {% if related_products %}
+        <section class="related-products">
+            <h2 class="related-products-title">منتجات ذات صلة</h2>
+            <div class="offers-grid related-products-grid">
+                {% for related in related_products %}
+                <div class="offer-card">
+                    {% if related.discount_percentage > 0 %}
+                <div class="offer-badge">خصم {{ related.discount_percentage }}%</div>
+                    {% endif %}
+
+                    <div class="offer-image">
+                        {% with primary_img=related.images.all|first %}
+                            {% if primary_img %}
+                                <img src="{{ primary_img.image.url }}" alt="{{ related.name }}">
+                            {% elif related.brand.logo %}
+                                <img src="{{ related.brand.logo.url }}" alt="{{ related.brand.name }}">
+                            {% else %}
+                                <i class="{{ related.icon }}"></i>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+
+                    <div class="offer-content">
+                        <h3>{{ related.name }}</h3>
+                        <p>{{ related.description|truncatewords:15 }}</p>
+
+                        {% if related.discount_percentage > 0 %}
+                            <div class="price-block">
+                                <span class="old-price">{{ related.price|floatformat:0 }} جنيه</span>
+                                <span class="sale-price">{{ related.final_price|floatformat:0 }} جنيه</span>
+                            </div>
+                        {% else %}
+                            <div class="product-price">{{ related.price|floatformat:0 }} جنيه</div>
+                        {% endif %}
+
+                        <button type="button" class="offer-btn" onclick="window.location.href='{% url 'products:detail' slug=related.slug %}'">
+                            <i class="fas fa-arrow-left"></i>
+                            عرض التفاصيل
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
         <section class="product-reviews" id="reviews">
             <div class="reviews-header">
                 <h2><i class="fas fa-star"></i> تقييمات العملاء</h2>

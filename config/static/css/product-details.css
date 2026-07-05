@@ -666,3 +666,20 @@
     text-align: center;
     padding: 1rem 0;
 }
+
+.related-products {
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+}
+
+.related-products-title {
+    text-align: center;
+    color: var(--secondary-color);
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+}
+
+.related-products-grid {
+    margin-bottom: 0;
+}

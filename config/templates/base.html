@@ -301,18 +301,30 @@
                 </div>
             </div>
             <div class="cart-footer">
+                <div id="guestCheckoutFields" class="checkout-fields" {% if user.is_authenticated %}hidden{% endif %}>
+                    <div class="checkout-field">
+                        <label for="guestFullName">الاسم الكامل</label>
+                        <input type="text" id="guestFullName" name="full_name" autocomplete="name" maxlength="100">
+                    </div>
+                    <div class="checkout-field">
+                        <label for="guestPhone">رقم الهاتف</label>
+                        <input type="tel" id="guestPhone" name="phone" autocomplete="tel" inputmode="tel" maxlength="11">
+                    </div>
+                    <div class="checkout-field">
+                        <label for="guestAddress">العنوان (اختياري)</label>
+                        <input type="text" id="guestAddress" name="address" autocomplete="street-address" maxlength="255">
+                    </div>
+                </div>
                 <p id="cartLoginNotice" class="cart-login-notice" {% if user.is_authenticated %}hidden{% endif %}>
-                    <i class="fas fa-lock"></i>
-                    يجب <a href="{% url 'users:login' %}?next={{ request.path|urlencode }}">تسجيل الدخول</a> لإتمام الطلب
+                    <i class="fas fa-user"></i>
+                    <a href="{% url 'users:login' %}?next={{ request.path|urlencode }}">سجّل الدخول</a> لحفظ طلباتك ومتابعتها (اختياري)
                 </p>
                 <div class="cart-total">
                     <span>المجموع: <span id="cartTotal">0 جنيه</span></span>
                 </div>
                 <div class="cart-actions">
                     <button type="button" class="btn-clear" onclick="clearCart()">مسح العربة</button>
-                    <button type="button" class="btn-checkout" id="cartCheckoutBtn" onclick="checkout()">
-                        {% if user.is_authenticated %}إتمام الطلب{% else %}تسجيل الدخول لإتمام الطلب{% endif %}
-                    </button>
+                    <button type="button" class="btn-checkout" id="cartCheckoutBtn" onclick="checkout()">إتمام الطلب</button>
                 </div>
             </div>
         </div>

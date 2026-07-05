@@ -192,13 +192,13 @@ class ClearCartAPIView(APIView):
 
 class CreateOrderAPIView(APIView):
     """
-    POST: إنشاء طلب من السلة
+    POST: إنشاء طلب من السلة (مسجّل أو زائر)
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = CreateOrderSerializer(data=request.data)
-        
+
         if not serializer.is_valid():
             return Response({
                 'success': False,
@@ -207,38 +207,58 @@ class CreateOrderAPIView(APIView):
 
         try:
             cart = get_or_create_cart(request)
-            
+
             if not cart.items.exists():
                 return Response({
                     'success': False,
                     'message': 'السلة فارغة'
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-            # إنشاء الطلب
+            data = serializer.validated_data
+
+            if request.user.is_authenticated:
+                user = request.user
+                full_name = (data.get('full_name') or '').strip() or user.full_name
+                phone = (data.get('phone') or '').strip() or user.phone
+                email = (data.get('email') or '').strip() or (user.email or '')
+            else:
+                user = None
+                full_name = (data.get('full_name') or '').strip()
+                phone = (data.get('phone') or '').strip()
+                email = (data.get('email') or '').strip()
+
+                if not full_name:
+                    return Response({
+                        'success': False,
+                        'message': 'الاسم الكامل مطلوب'
+                    }, status=status.HTTP_400_BAD_REQUEST)
+                if not phone:
+                    return Response({
+                        'success': False,
+                        'message': 'رقم الهاتف مطلوب'
+                    }, status=status.HTTP_400_BAD_REQUEST)
+
             order = Order.objects.create(
-                user=request.user,
-                full_name=serializer.validated_data.get('full_name', request.user.full_name),
-                phone=serializer.validated_data.get('phone', request.user.phone),
-                email=serializer.validated_data.get('email', request.user.email or ''),
-                address=serializer.validated_data.get('address', ''),
-                notes=serializer.validated_data.get('notes', ''),
+                user=user,
+                full_name=full_name,
+                phone=phone,
+                email=email,
+                address=data.get('address', '') or '',
+                notes=data.get('notes', '') or '',
                 total_amount=cart.total_price
             )
 
-            # إضافة المنتجات للطلب
-            for cart_item in cart.items.all():
+            for cart_item in cart.items.select_related('product'):
+                product = cart_item.product
                 OrderItem.objects.create(
                     order=order,
-                    product=cart_item.product,
-                    product_name=cart_item.product.name,
+                    product=product,
+                    product_name=product.name,
                     quantity=cart_item.quantity,
-                    price=cart_item.product.final_price
+                    price=product.final_price
                 )
 
-            # توليد رابط الواتساب
             whatsapp_link = order.generate_whatsapp_link()
-            
-            # تفريغ السلة
             cart.items.all().delete()
 
             order_serializer = OrderSerializer(order)
