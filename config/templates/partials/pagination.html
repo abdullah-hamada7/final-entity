@@ -3,7 +3,7 @@
     <ul class="pagination">
         {% if page_obj.has_previous %}
         <li>
-            <a href="?{% if search_query %}search={{ search_query|urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}" aria-label="الصفحة السابقة">
+            <a href="?{% if query_params %}{{ query_params }}&{% endif %}page={{ page_obj.previous_page_number }}" aria-label="الصفحة السابقة">
                 <i class="fas fa-chevron-right"></i>
             </a>
         </li>
@@ -14,14 +14,14 @@
             <li><span class="current" aria-current="page">{{ num }}</span></li>
             {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
             <li>
-                <a href="?{% if search_query %}search={{ search_query|urlencode }}&{% endif %}page={{ num }}">{{ num }}</a>
+                <a href="?{% if query_params %}{{ query_params }}&{% endif %}page={{ num }}">{{ num }}</a>
             </li>
             {% endif %}
         {% endfor %}
 
         {% if page_obj.has_next %}
         <li>
-            <a href="?{% if search_query %}search={{ search_query|urlencode }}&{% endif %}page={{ page_obj.next_page_number }}" aria-label="الصفحة التالية">
+            <a href="?{% if query_params %}{{ query_params }}&{% endif %}page={{ page_obj.next_page_number }}" aria-label="الصفحة التالية">
                 <i class="fas fa-chevron-left"></i>
             </a>
         </li>

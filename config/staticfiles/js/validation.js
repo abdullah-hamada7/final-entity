@@ -4,9 +4,15 @@
 
   const PHONE_RE = /^01[0-9]{9}$/;
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const SEARCH_MAX_LEN = 100;
+  const SEARCH_MIN_LEN = 2;
 
   function normalizePhone(value) {
     return String(value || '').trim().replace(/[\s-]/g, '');
+  }
+
+  function fieldContainer(input) {
+    return input?.closest('.input-group, .form-group, .checkout-field, .search-container');
   }
 
   function showError(input, message) {
@@ -14,7 +20,7 @@
     clearError(input);
     input.classList.add('input-invalid');
     input.setAttribute('aria-invalid', 'true');
-    const group = input.closest('.input-group, .form-group, .checkout-field');
+    const group = fieldContainer(input);
     if (!group) return;
     const err = document.createElement('span');
     err.className = 'field-error';
@@ -27,7 +33,7 @@
     if (!input) return;
     input.classList.remove('input-invalid');
     input.removeAttribute('aria-invalid');
-    input.closest('.input-group, .form-group, .checkout-field')?.querySelector('.field-error')?.remove();
+    fieldContainer(input)?.querySelector('.field-error')?.remove();
   }
 
   function clearFormErrors(form) {
@@ -42,7 +48,9 @@
   function validateName(value) {
     const err = validateRequired(value, 'الاسم');
     if (err) return err;
-    if (String(value).trim().length < 2) return 'الاسم يجب أن يكون حرفين على الأقل';
+    const name = String(value).trim();
+    if (name.length < 2) return 'الاسم يجب أن يكون حرفين على الأقل';
+    if (name.length > 100) return 'الاسم طويل جدًا';
     return null;
   }
 
@@ -56,6 +64,7 @@
   function validateEmail(value, required) {
     const email = String(value || '').trim();
     if (!email) return required ? 'البريد الإلكتروني مطلوب' : null;
+    if (email.length > 254) return 'البريد الإلكتروني طويل جدًا';
     if (!EMAIL_RE.test(email)) return 'أدخل بريدًا إلكترونيًا صحيحًا';
     return null;
   }
@@ -65,6 +74,7 @@
     const err = validateRequired(value, 'كلمة المرور');
     if (err) return err;
     if (String(value).length < min) return `كلمة المرور يجب أن تكون ${min} أحرف على الأقل`;
+    if (String(value).length > 128) return 'كلمة المرور طويلة جدًا';
     return null;
   }
 
@@ -74,14 +84,19 @@
   }
 
   function validateSubject(value) {
-    return validateRequired(value, 'موضوع الرسالة');
+    const err = validateRequired(value, 'موضوع الرسالة');
+    if (err) return err;
+    if (String(value).trim().length > 150) return 'موضوع الرسالة طويل جدًا';
+    return null;
   }
 
   function validateMessage(value, minLen) {
     const min = minLen || 10;
     const err = validateRequired(value, 'الرسالة');
     if (err) return err;
-    if (String(value).trim().length < min) return `الرسالة يجب أن تكون ${min} أحرف على الأقل`;
+    const message = String(value).trim();
+    if (message.length < min) return `الرسالة يجب أن تكون ${min} أحرف على الأقل`;
+    if (message.length > 2000) return 'الرسالة طويلة جدًا';
     return null;
   }
 
@@ -89,6 +104,18 @@
     const err = validateRequired(value, 'العنوان');
     if (err) return err;
     if (String(value).trim().length < 5) return 'العنوان قصير جدًا';
+    return null;
+  }
+
+  function validateSearchQuery(value) {
+    const query = String(value || '').trim();
+    if (!query) return null;
+    if (query.length < SEARCH_MIN_LEN) {
+      return `كلمة البحث يجب أن تكون ${SEARCH_MIN_LEN} أحرف على الأقل`;
+    }
+    if (query.length > SEARCH_MAX_LEN) {
+      return `كلمة البحث طويلة جدًا (${SEARCH_MAX_LEN} حرف كحد أقصى)`;
+    }
     return null;
   }
 
@@ -119,13 +146,23 @@
     return { input, message };
   }
 
+  function bindSearchForm(form, inputSelector) {
+    bindForm(form, (searchForm) => {
+      const search = searchForm.querySelector(inputSelector || 'input[name="search"]');
+      let msg = validateSearchQuery(search?.value);
+      if (msg) return fail(search, msg);
+      if (search) search.value = String(search.value).trim();
+      return true;
+    });
+  }
+
   function setupAuthForms() {
     bindForm(document.getElementById('loginForm'), (form) => {
       const phone = form.querySelector('#loginPhone');
       const password = form.querySelector('#loginPassword');
       let msg = validatePhone(phone?.value, true);
       if (msg) return fail(phone, msg);
-      msg = validateRequired(password?.value, 'كلمة المرور');
+      msg = validatePassword(password?.value, 6);
       if (msg) return fail(password, msg);
       return true;
     });
@@ -197,7 +234,17 @@
     });
   }
 
-  document.addEventListener('DOMContentLoaded', setupAuthForms);
+  function setupSearchForms() {
+    bindSearchForm(document.getElementById('productsSearchForm'), '#searchInput');
+    bindSearchForm(document.getElementById('categorySearchForm'), '#categorySearchInput');
+  }
+
+  function initValidation() {
+    setupAuthForms();
+    setupSearchForms();
+  }
+
+  document.addEventListener('DOMContentLoaded', initValidation);
 
   global.EntityValidation = {
     showError,
@@ -210,6 +257,7 @@
     validatePasswordMatch,
     validateMessage,
     validateAddress,
+    validateSearchQuery,
     normalizePhone,
   };
 })(window);

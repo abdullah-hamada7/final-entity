@@ -8,104 +8,78 @@
 {% endblock %}
 
 {% block content %}
-    <section class="products-section">
-        <div class="products-container">
-            <h1 class="section-title">منتجاتنا الطبية</h1>
-            
-            <form method="GET" action="{% url 'products:home' %}" class="search-container">
-                <i class="fas fa-search search-icon"></i>
-                <input 
-                    type="search" 
-                    name="search" 
-                    id="searchInput" 
-                    placeholder="ابحث عن المنتجات..." 
-                    value="{{ search_query }}"
-                    autocomplete="off"
-                    enterkeyhint="search"
-                >
-                <button type="submit" class="search-btn">
-                    <i class="fas fa-search"></i>
-                    بحث
-                </button>
-            </form>
-            
-            {% if search_query %}
-            <div class="search-results-banner">
-                <p>
-                    نتائج البحث عن: "{{ search_query }}"
-                    <a href="{% url 'products:home' %}" class="search-clear-link">
-                        <i class="fas fa-times-circle"></i> إلغاء البحث
-                    </a>
-                </p>
-            </div>
-            {% endif %}
+<section class="products-section">
+    <div class="products-container">
+        <h1 class="section-title">منتجاتنا الطبية</h1>
 
-            {% if products %}
-            <div class="offers-grid">
-                {% for product in products %}
-                <div class="offer-card">
-                    {% if product.discount_percentage > 0 %}
-                    <div class="offer-badge">خصم {{ product.discount_percentage }}%</div>
-                    {% endif %}
-                    
-                    <div class="offer-image">
-                        {% with primary_img=product.images.all|first %}
-                            {% if primary_img %}
-                                <img src="{{ primary_img.image.url }}" alt="{{ product.name }}">
-                            {% elif product.brand.logo %}
-                                <img src="{{ product.brand.logo.url }}" alt="{{ product.brand.name }}">
-                            {% else %}
-                                <i class="{{ product.icon }}"></i>
-                            {% endif %}
-                        {% endwith %}
-                    </div>
-    
-                    <div class="offer-content">
-                        <h3>{{ product.name }}</h3>
-                        <p>{{ product.description|truncatewords:20 }}</p>
-    
-                        <div class="offer-features">
-                            <span><i class="fas fa-tag"></i> {{ product.category.name }}</span>
-                            {% if product.brand %}
-                                <span><i class="fas fa-building"></i> {{ product.brand.name }}</span>
-                            {% endif %}
-                            {% if product.stock > 0 %}
-                                <span><i class="fas fa-check-circle"></i> متوفر</span>
-                            {% else %}
-                                <span class="stock-unavailable"><i class="fas fa-times-circle"></i> غير متوفر</span>
-                            {% endif %}
-                        </div>
-    
-                        {% if product.discount_percentage > 0 %}
-                            <div class="price-block">
-                                <span class="old-price">{{ product.price|floatformat:0 }} جنيه</span>
-                                <span class="sale-price">{{ product.final_price|floatformat:0 }} جنيه</span>
-                            </div>
+        {% url 'products:home' as products_home_url %}
+        {% include 'partials/products_search.html' with search_action=products_home_url clear_search_url=products_home_url %}
+
+        {% if products %}
+        <div class="offers-grid">
+            {% for product in products %}
+            <div class="offer-card">
+                {% if product.discount_percentage > 0 %}
+                <div class="offer-badge">خصم {{ product.discount_percentage }}%</div>
+                {% endif %}
+
+                <div class="offer-image">
+                    {% with primary_img=product.images.all|first %}
+                        {% if primary_img %}
+                            <img src="{{ primary_img.image.url }}" alt="{{ product.name }}">
+                        {% elif product.brand.logo %}
+                            <img src="{{ product.brand.logo.url }}" alt="{{ product.brand.name }}">
                         {% else %}
-                            <div class="product-price">{{ product.price|floatformat:0 }} جنيه</div>
+                            <i class="{{ product.icon }}"></i>
                         {% endif %}
-    
-                        <button type="button" class="offer-btn" onclick="window.location.href='{% url 'products:detail' slug=product.slug %}'">
-                            <i class="fas fa-arrow-left"></i>
-                            عرض التفاصيل
-                        </button>
-                    </div>
+                    {% endwith %}
                 </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="products-empty-state">
-                <i class="fas fa-box-open"></i>
-                <p>
-                    {% if search_query %}
-                        لا توجد نتائج للبحث "{{ search_query }}"
+
+                <div class="offer-content">
+                    <h3>{{ product.name }}</h3>
+                    <p>{{ product.description|truncatewords:20 }}</p>
+
+                    <div class="offer-features">
+                        <span><i class="fas fa-tag"></i> {{ product.category.name }}</span>
+                        {% if product.brand %}
+                            <span><i class="fas fa-building"></i> {{ product.brand.name }}</span>
+                        {% endif %}
+                        {% if product.stock > 0 %}
+                            <span><i class="fas fa-check-circle"></i> متوفر</span>
+                        {% else %}
+                            <span class="stock-unavailable"><i class="fas fa-times-circle"></i> غير متوفر</span>
+                        {% endif %}
+                    </div>
+
+                    {% if product.discount_percentage > 0 %}
+                        <div class="price-block">
+                            <span class="old-price">{{ product.price|floatformat:0 }} جنيه</span>
+                            <span class="sale-price">{{ product.final_price|floatformat:0 }} جنيه</span>
+                        </div>
                     {% else %}
-                        لا توجد منتجات متاحة حالياً
+                        <div class="product-price">{{ product.price|floatformat:0 }} جنيه</div>
                     {% endif %}
-                </p>
+
+                    <button type="button" class="offer-btn" onclick="window.location.href='{% url 'products:detail' slug=product.slug %}'">
+                        <i class="fas fa-arrow-left"></i>
+                        عرض التفاصيل
+                    </button>
+                </div>
             </div>
-            {% endif %}
+            {% endfor %}
         </div>
+        {% else %}
+        <div class="products-empty-state">
+            <i class="fas fa-box-open"></i>
+            <p>
+                {% if search_query or category_filter %}
+                    لا توجد نتائج مطابقة للبحث أو التصفية الحالية
+                {% else %}
+                    لا توجد منتجات متاحة حالياً
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
 
         {% include 'partials/pagination.html' %}
     </div>

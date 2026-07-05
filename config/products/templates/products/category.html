@@ -12,33 +12,8 @@
     <div class="products-container">
         <h1 class="section-title">منتجات تصنيف: {{ category.name }}</h1>
 
-        <form method="GET" action="{% url 'products:category' slug=category.slug %}" class="search-container">
-            <i class="fas fa-search search-icon"></i>
-            <input 
-                type="search" 
-                name="search" 
-                id="searchInput" 
-                placeholder="ابحث عن المنتجات..." 
-                value="{{ search_query }}"
-                autocomplete="off"
-                enterkeyhint="search"
-            >
-            <button type="submit" class="search-btn">
-                <i class="fas fa-search"></i>
-                بحث
-            </button>
-        </form>
-
-        {% if search_query %}
-        <div class="search-results-banner">
-            <p>
-                نتائج البحث عن: "{{ search_query }}"
-                <a href="{% url 'products:category' slug=category.slug %}" class="search-clear-link">
-                    <i class="fas fa-times-circle"></i> إلغاء البحث
-                </a>
-            </p>
-        </div>
-        {% endif %}
+        {% url 'products:category' slug=category.slug as category_url %}
+        {% include 'partials/category_search.html' with search_action=category_url clear_search_url=category_url %}
 
         {% if products %}
         <div class="offers-grid">
@@ -105,8 +80,8 @@
             </p>
         </div>
         {% endif %}
-    </div>
 
-    {% include 'partials/pagination.html' %}
+        {% include 'partials/pagination.html' %}
+    </div>
 </section>
 {% endblock %}

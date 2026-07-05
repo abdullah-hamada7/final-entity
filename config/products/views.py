@@ -3,8 +3,10 @@ from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Category, Product, Review
+from .utils import build_products_query
 
 PRODUCTS_PER_PAGE = 12
+FILTER_CATEGORIES_LIMIT = 3
 
 
 def paginate_queryset(request, queryset):
@@ -29,9 +31,18 @@ def home(request):
 
 def products_list(request):
     categories = Category.objects.filter(is_active=True)
+    filter_categories = categories.order_by('order', 'name')[:FILTER_CATEGORIES_LIMIT]
     products = Product.objects.filter(is_active=True)
 
-    search_query = request.GET.get('search', '')
+    search_query = request.GET.get('search', '').strip()
+    category_filter = request.GET.get('category', '').strip()
+    valid_slugs = set(categories.values_list('slug', flat=True))
+
+    if category_filter and category_filter not in valid_slugs:
+        category_filter = ''
+    elif category_filter:
+        products = products.filter(category__slug=category_filter)
+
     if search_query:
         products = products.filter(
             Q(name__icontains=search_query) |
@@ -39,12 +50,19 @@ def products_list(request):
         )
 
     page_obj = paginate_queryset(request, products)
+    active_category = None
+    if category_filter:
+        active_category = categories.filter(slug=category_filter).first()
 
     context = {
         'categories': categories,
+        'filter_categories': filter_categories,
         'products': page_obj,
         'page_obj': page_obj,
         'search_query': search_query,
+        'category_filter': category_filter,
+        'active_category': active_category,
+        'query_params': build_products_query(search_query, category_filter),
     }
     return render(request, 'products/products.html', context)
 
@@ -72,7 +90,7 @@ def category_products(request, slug):
     category = get_object_or_404(Category, slug=slug, is_active=True)
     products = Product.objects.filter(category=category, is_active=True)
 
-    search_query = request.GET.get('search', '')
+    search_query = request.GET.get('search', '').strip()
     if search_query:
         products = products.filter(
             Q(name__icontains=search_query) |
@@ -86,6 +104,7 @@ def category_products(request, slug):
         'products': page_obj,
         'page_obj': page_obj,
         'search_query': search_query,
+        'query_params': build_products_query(search_query),
     }
 
     return render(request, 'products/category.html', context)

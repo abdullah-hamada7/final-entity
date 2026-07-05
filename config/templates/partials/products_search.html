@@ -1,0 +1,62 @@
+<div class="products-search-block">
+    <form method="GET" action="{{ search_action }}" id="productsSearchForm" class="products-search-form" novalidate>
+        {% if category_filter %}
+        <input type="hidden" name="category" value="{{ category_filter }}">
+        {% endif %}
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input
+                type="search"
+                name="search"
+                id="searchInput"
+                placeholder="ابحث عن المنتجات..."
+                value="{{ search_query }}"
+                autocomplete="off"
+                enterkeyhint="search"
+                maxlength="100"
+            >
+            <button type="submit" class="search-btn">
+                <i class="fas fa-search"></i>
+                بحث
+            </button>
+        </div>
+    </form>
+
+    {% if filter_categories %}
+    <nav class="category-filters" aria-label="تصفية حسب القسم">
+        <span class="category-filters-label">الأقسام:</span>
+        <a
+            href="{{ search_action }}{% if search_query %}?search={{ search_query|urlencode }}{% endif %}"
+            class="category-filter-pill{% if not category_filter %} is-active{% endif %}"
+        >
+            الكل
+        </a>
+        {% for cat in filter_categories %}
+        <a
+            href="{{ search_action }}?{% if search_query %}search={{ search_query|urlencode }}&{% endif %}category={{ cat.slug }}"
+            class="category-filter-pill{% if category_filter == cat.slug %} is-active{% endif %}"
+        >
+            <i class="{{ cat.display_icon }}" aria-hidden="true"></i>
+            {{ cat.name }}
+        </a>
+        {% endfor %}
+    </nav>
+    {% endif %}
+
+    {% if search_query or category_filter %}
+    <div class="search-results-banner">
+        <p>
+            {% if search_query and active_category %}
+                نتائج البحث عن "{{ search_query }}" في قسم {{ active_category.name }}
+            {% elif search_query %}
+                نتائج البحث عن: "{{ search_query }}"
+            {% elif active_category %}
+                منتجات قسم: {{ active_category.name }}
+            {% endif %}
+            <a href="{{ clear_search_url }}" class="search-clear-link">
+                <i class="fas fa-times-circle"></i> إلغاء التصفية
+            </a>
+        </p>
+    </div>
+    {% endif %}
+</div>
