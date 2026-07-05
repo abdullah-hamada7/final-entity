@@ -296,10 +296,6 @@ body.menu-open {
         max-width: 960px;
     }
 
-    .hero h1 {
-        font-size: 3rem;
-    }
-
     .features h2 {
         font-size: 2.5rem;
     }
@@ -412,10 +408,6 @@ body.menu-open {
         min-height: 80vh;
     }
 
-    .hero h1 {
-        font-size: 2.5rem;
-    }
-
     .hero p {
         font-size: 1.1rem;
     }
@@ -439,8 +431,7 @@ body.menu-open {
     }
 
     .hero h1 {
-        font-size: 2rem;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     .hero p {
