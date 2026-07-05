@@ -27,7 +27,7 @@
                 </div>
             {% endif %}
 
-            <form id="signupForm" class="auth-form" method="POST" action="{% url 'users:register' %}" novalidate>
+            <form id="signupForm" class="auth-form" method="POST" action="{% url 'users:register' %}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}" novalidate>
                 {% csrf_token %}
 
                 <div class="input-group">
@@ -61,7 +61,7 @@
 
                 <div class="auth-links">
                     <span>لديك حساب بالفعل؟ </span>
-                    <a href="{% url 'users:login' %}">تسجيل الدخول</a>
+                    <a href="{% url 'users:login' %}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}">تسجيل الدخول</a>
                 </div>
             </form>
         </div>

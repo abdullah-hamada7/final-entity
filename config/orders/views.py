@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+from django.urls import reverse
+from urllib.parse import quote
 from .models import Cart, CartItem, Order, OrderItem
 from products.models import Product
 import json
@@ -279,6 +281,16 @@ def api_create_order(request):
 
 @require_POST
 def submit_cart(request):
+    if not request.user.is_authenticated:
+        next_path = request.META.get('HTTP_REFERER', '/')
+        login_url = f"{reverse('users:login')}?next={quote(next_path, safe='')}"
+        return JsonResponse({
+            "success": False,
+            "login_required": True,
+            "message": "يجب تسجيل الدخول لإتمام الطلب",
+            "login_url": login_url,
+        }, status=401)
+
     try:
         data = json.loads(request.body)
         items = data.get("items", [])
@@ -286,18 +298,12 @@ def submit_cart(request):
         if not items:
             return JsonResponse({"success": False, "message": "السلة فارغة"}, status=400)
 
-        full_name = (data.get("full_name") or "").strip()
-        phone = (data.get("phone") or "").strip()
+        user = request.user
+        full_name = (data.get("full_name") or "").strip() or user.full_name
+        phone = (data.get("phone") or "").strip() or user.phone
         address = (data.get("address") or "").strip()
         notes = (data.get("notes") or "").strip()
-        email = (data.get("email") or "").strip()
-
-        user = request.user if request.user.is_authenticated else None
-
-        if user:
-            full_name = full_name or user.full_name
-            phone = phone or user.phone
-            email = email or (user.email or "")
+        email = (data.get("email") or "").strip() or (user.email or "")
 
         if not full_name:
             return JsonResponse({"success": False, "message": "الاسم الكامل مطلوب"}, status=400)
@@ -339,14 +345,7 @@ def submit_cart(request):
 
         whatsapp_link = order.generate_whatsapp_link()
 
-        if user:
-            Cart.objects.filter(user=user).delete()
-        else:
-            session_key = request.session.session_key
-            if not session_key:
-                request.session.create()
-            session_key = request.session.session_key
-            Cart.objects.filter(session_key=session_key).delete()
+        Cart.objects.filter(user=user).delete()
 
         return JsonResponse({
             "success": True,

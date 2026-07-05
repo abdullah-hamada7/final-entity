@@ -2,8 +2,19 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.utils.http import url_has_allowed_host_and_scheme
 from .models import CustomUser
 from orders.models import Order
+
+
+def _safe_next_url(request, next_url):
+    if next_url and url_has_allowed_host_and_scheme(
+        next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        return next_url
+    return None
 
 def register_view(request):
     if request.user.is_authenticated:
@@ -33,7 +44,8 @@ def register_view(request):
         
         login(request, user)
         messages.success(request, 'تم إنشاء الحساب بنجاح')
-        return redirect('home')
+        next_url = _safe_next_url(request, request.GET.get('next'))
+        return redirect(next_url or 'home')
     
     return render(request, 'users/register.html')
 
@@ -50,7 +62,11 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, 'تم تسجيل الدخول بنجاح')
-            return redirect(request.GET.get('next', 'home'))
+            next_url = _safe_next_url(
+                request,
+                request.POST.get('next') or request.GET.get('next'),
+            )
+            return redirect(next_url or 'home')
         else:
             messages.error(request, 'رقم الهاتف أو كلمة المرور غير صحيحة')
     
@@ -78,9 +94,11 @@ def profile_view(request):
         return redirect('users:profile')
 
     order_count = Order.objects.filter(user=request.user).count()
+    orders = Order.objects.filter(user=request.user).prefetch_related('items')[:20]
 
     return render(request, 'users/profile.html', {
         'order_count': order_count,
+        'orders': orders,
     })
 
 

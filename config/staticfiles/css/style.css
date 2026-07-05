@@ -3009,3 +3009,23 @@ html.js-reveal .shortcut-card:not(.visible) {
     outline: none;
     border-color: var(--secondary-color);
 }
+
+.cart-login-notice {
+    margin: 0 0 0.75rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: 10px;
+    background: rgba(27, 155, 216, 0.1);
+    color: var(--third-color);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.cart-login-notice a {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+.auth-checkout-notice {
+    display: block;
+}

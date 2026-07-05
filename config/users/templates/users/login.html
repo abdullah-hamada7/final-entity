@@ -27,8 +27,16 @@
                 </div>
             {% endif %}
 
-            <form id="loginForm" class="auth-form" method="POST" action="{% url 'users:login' %}" novalidate>
+            <form id="loginForm" class="auth-form" method="POST" action="{% url 'users:login' %}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}" novalidate>
                 {% csrf_token %}
+                {% if request.GET.next %}
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
+                {% endif %}
+                {% if request.GET.next %}
+                <div class="form-msg success auth-checkout-notice">
+                    <p>سجّل الدخول لإتمام طلبك من عربة المشتريات</p>
+                </div>
+                {% endif %}
                 <div class="input-group">
                     <label for="loginPhone"><i class="fas fa-user-shield"></i> رقم الهاتف</label>
                     <input type="tel" id="loginPhone" name="phone" required placeholder="010xxxxxxxx" inputmode="tel" pattern="^01[0-9]{9}$">
@@ -44,7 +52,7 @@
                 <div class="auth-links">
                     <a href="{% url 'users:reset_password' %}">نسيت كلمة المرور؟</a>
                     <span class="auth-separator">|</span>
-                    <a href="{% url 'users:register' %}">إنشاء حساب جديد</a>
+                    <a href="{% url 'users:register' %}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}">إنشاء حساب جديد</a>
                 </div>
             </form>
         </div>

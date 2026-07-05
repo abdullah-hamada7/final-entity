@@ -63,6 +63,7 @@
 
 <body class="{% block body_class %}{% endblock %}"
     data-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}"
+    data-login-url="{% url 'users:login' %}"
     data-user-name="{% if user.is_authenticated %}{{ user.full_name|escapejs }}{% endif %}"
     data-user-phone="{% if user.is_authenticated %}{{ user.phone|escapejs }}{% endif %}"
     data-user-email="{% if user.is_authenticated %}{{ user.email|default:''|escapejs }}{% endif %}">
@@ -288,12 +289,18 @@
                 </div>
             </div>
             <div class="cart-footer">
+                <p id="cartLoginNotice" class="cart-login-notice" {% if user.is_authenticated %}hidden{% endif %}>
+                    <i class="fas fa-lock"></i>
+                    يجب <a href="{% url 'users:login' %}?next={{ request.path|urlencode }}">تسجيل الدخول</a> لإتمام الطلب
+                </p>
                 <div class="cart-total">
                     <span>المجموع: <span id="cartTotal">0 جنيه</span></span>
                 </div>
                 <div class="cart-actions">
                     <button type="button" class="btn-clear" onclick="clearCart()">مسح العربة</button>
-                    <button type="button" class="btn-checkout" onclick="checkout()">إتمام الطلب</button>
+                    <button type="button" class="btn-checkout" id="cartCheckoutBtn" onclick="checkout()">
+                        {% if user.is_authenticated %}إتمام الطلب{% else %}تسجيل الدخول لإتمام الطلب{% endif %}
+                    </button>
                 </div>
             </div>
         </div>

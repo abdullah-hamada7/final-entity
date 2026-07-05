@@ -7,6 +7,23 @@
   let cart = [];
   let previousFocus = null;
 
+  function isLoggedIn() {
+    return document.body?.dataset.auth === 'true';
+  }
+
+  function getLoginUrl() {
+    const base = document.body?.dataset.loginUrl || '/users/login/';
+    const next = encodeURIComponent(window.location.pathname + window.location.search);
+    return `${base}?next=${next}`;
+  }
+
+  function redirectToLogin(message) {
+    if (message) {
+      alert(message);
+    }
+    window.location.href = getLoginUrl();
+  }
+
   function getCsrfToken() {
     const meta = document.querySelector('meta[name="csrf-token"]');
     if (meta) return meta.getAttribute('content') || '';
@@ -32,6 +49,19 @@
     const num = Number(n || 0);
     if (!Number.isFinite(num)) return '0';
     return String(num);
+  }
+
+  function updateCheckoutButton() {
+    const btn = document.getElementById('cartCheckoutBtn');
+    const notice = document.getElementById('cartLoginNotice');
+    const loggedIn = isLoggedIn();
+
+    if (btn) {
+      btn.textContent = loggedIn ? 'إتمام الطلب' : 'تسجيل الدخول لإتمام الطلب';
+    }
+    if (notice) {
+      notice.hidden = loggedIn;
+    }
   }
 
   function updateCartUI() {
@@ -86,6 +116,8 @@
       );
       cartTotal.textContent = `${money(total)} جنيه`;
     }
+
+    updateCheckoutButton();
   }
 
   function showCartNotification(message = 'تم إضافة المنتج للسلة') {
@@ -176,6 +208,7 @@
       previousFocus = document.activeElement;
       cartModal.classList.add('active');
       document.body.classList.add('cart-open');
+      updateCheckoutButton();
       const closeBtn = cartModal.querySelector('.close-cart');
       closeBtn?.focus();
     } else {
@@ -192,59 +225,38 @@
     const body = document.body;
     const validation = window.EntityValidation;
 
-    if (body.dataset.auth === 'true') {
-      return {
-        full_name: body.dataset.userName || '',
-        phone: validation ? validation.normalizePhone(body.dataset.userPhone) : (body.dataset.userPhone || ''),
-        email: body.dataset.userEmail || '',
-        address: '',
-      };
-    }
-
-    const full_name = window.prompt('الاسم الكامل:');
-    if (!full_name || !full_name.trim()) return null;
-
-    const phoneRaw = window.prompt('رقم الهاتف (01xxxxxxxxx):');
-    if (!phoneRaw || !phoneRaw.trim()) return null;
-
-    const phone = validation ? validation.normalizePhone(phoneRaw) : phoneRaw.trim();
-    if (validation) {
-      const phoneErr = validation.validatePhone(phone, true);
-      if (phoneErr) {
-        alert(phoneErr);
-        return null;
-      }
-    }
-
     return {
-      full_name: full_name.trim(),
-      phone,
-      email: '',
+      full_name: body.dataset.userName || '',
+      phone: validation ? validation.normalizePhone(body.dataset.userPhone) : (body.dataset.userPhone || ''),
+      email: body.dataset.userEmail || '',
       address: '',
     };
   }
 
   function checkout() {
     if (!cart.length) {
-      alert("عربة المشتريات فارغة");
+      alert('عربة المشتريات فارغة');
+      return;
+    }
+
+    if (!isLoggedIn()) {
+      redirectToLogin('يجب تسجيل الدخول لإتمام الطلب');
       return;
     }
 
     const details = getCheckoutDetails();
-    if (!details) return;
-
     const headers = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     };
     const csrfToken = getCsrfToken();
     if (csrfToken) {
-      headers["X-CSRFToken"] = csrfToken;
+      headers['X-CSRFToken'] = csrfToken;
     }
 
-    fetch("/orders/submit-cart/", {
-      method: "POST",
+    fetch('/orders/submit-cart/', {
+      method: 'POST',
       headers,
-      credentials: "same-origin",
+      credentials: 'same-origin',
       body: JSON.stringify({
         items: cart,
         full_name: details.full_name,
@@ -253,8 +265,16 @@
         email: details.email,
       })
     })
-    .then(res => res.json())
-    .then(data => {
+    .then(async (res) => {
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 401 && data.login_required) {
+        redirectToLogin(data.message || 'يجب تسجيل الدخول لإتمام الطلب');
+        return null;
+      }
+      return data;
+    })
+    .then((data) => {
+      if (!data) return;
       if (data.success) {
         clearCart();
         toggleCart(false);
@@ -263,11 +283,11 @@
           setTimeout(() => window.open(data.whatsapp_link, '_blank'), 800);
         }
       } else {
-        alert(data.message || "حدث خطأ أثناء إرسال الطلب");
+        alert(data.message || 'حدث خطأ أثناء إرسال الطلب');
       }
     })
     .catch(() => {
-      alert("حدث خطأ أثناء إرسال الطلب");
+      alert('حدث خطأ أثناء إرسال الطلب');
     });
   }
 
