@@ -1,7 +1,6 @@
 # orders/urls.py
 from django.urls import path
 from . import views, api_views
-from offers.views import add_all_offer_products
 
 app_name = 'orders'
 
