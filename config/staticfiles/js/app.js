@@ -12,6 +12,33 @@
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     }[m]));
 
+  const NOTIFY_ICONS = {
+    success: 'fa-check-circle',
+    error: 'fa-exclamation-circle',
+    warning: 'fa-exclamation-triangle',
+    info: 'fa-info-circle',
+  };
+
+  function showNotify(message, type = 'info', duration = 3200) {
+    if (!message) return null;
+
+    const note = document.createElement('div');
+    note.className = `app-toast app-toast--${type}`;
+    note.setAttribute('role', 'alert');
+    note.innerHTML = `<i class="fas ${NOTIFY_ICONS[type] || NOTIFY_ICONS.info}" aria-hidden="true"></i><span>${escapeHtml(message)}</span>`;
+    document.body.appendChild(note);
+
+    requestAnimationFrame(() => note.classList.add('show'));
+    setTimeout(() => {
+      note.classList.remove('show');
+      setTimeout(() => note.remove(), 300);
+    }, duration);
+
+    return note;
+  }
+
+  window.EntityNotify = { show: showNotify };
+
 
   function setupSmoothAnchors() {
     qsa('a[href^="#"]').forEach((a) => {
@@ -122,8 +149,7 @@
     btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
   }
 
-  function setupBackToTop() {
-    // products.html only: show/hide section details
+  function setupProductsDetailsToggles() {
     const showButtons = qsa('[data-show-details]');
     const hideButtons = qsa('[data-hide-details]');
     const isProductsPage = !!qs('#searchInput') && !!qs('.products-section-details');

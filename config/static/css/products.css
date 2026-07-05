@@ -15,12 +15,16 @@
 
 .offers-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 350px), 420px));
+    justify-content: center;
     gap: 3rem;
     margin-bottom: 4rem;
 }
 
 .offer-card {
+    width: 100%;
+    max-width: 420px;
+    justify-self: center;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
@@ -159,6 +163,10 @@
         gap: 2rem;
     }
 
+    .offer-card {
+        max-width: none;
+    }
+
     .section-title {
         margin-bottom: 2rem;
     }
@@ -197,13 +205,52 @@
     position: relative;
 }
 
+.products-search-form .search-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.products-search-form .search-icon {
+    position: static;
+    transform: none;
+    flex-shrink: 0;
+    color: var(--secondary-color);
+    font-size: 1.2rem;
+}
+
+.products-search-form .search-input {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    padding: 16px 20px;
+    border: 3px solid var(--light-blue);
+    border-radius: 30px;
+    font-size: 1.1rem;
+    background-color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+}
+
+.products-search-form .search-input:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 5px rgba(251, 191, 36, 0.2);
+}
+
+.products-search-form .search-btn {
+    flex-shrink: 0;
+}
+
 .products-search-block {
     max-width: 900px;
     margin: 0 auto 3rem;
 }
 
-.products-search-form .search-container {
-    margin-bottom: 0;
+.products-search-block:has(.field-error) .search-container {
+    margin-bottom: 1.75rem;
 }
 
 .category-filters {
@@ -251,11 +298,6 @@
     color: var(--gold);
 }
 
-.search-container input.input-invalid {
-    border-color: #dc3545;
-    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
-}
-
 .search-container .field-error {
     position: absolute;
     right: 0;
@@ -276,22 +318,9 @@
     font-size: 1.4rem;
 }
 
-#searchInput {
-    width: 100%;
-    padding: 20px 60px 20px 25px;
-    border: 3px solid var(--light-blue);
-    border-radius: 30px;
-    font-size: 1.2rem;
-    background-color: white;
-    transition: all 0.4s ease;
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
-}
-
-#searchInput:focus {
-    outline: none;
-    border-color: var(--gold);
-    box-shadow: 0 0 0 5px rgba(251, 191, 36, 0.2);
-    transform: scale(1.02);
+.products-search-form .search-input.input-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
 }
 
 /* الأقسام الرئيسية */
@@ -753,9 +782,10 @@ html {
     }
 
     #searchInput,
-    #categorySearchInput {
-        padding: 18px 50px 18px 20px;
-        font-size: 1.1rem;
+    #categorySearchInput,
+    .products-search-form .search-input {
+        padding: 14px 16px;
+        font-size: 1rem;
     }
 }
 
@@ -839,18 +869,6 @@ html {
 
 .search-btn:active {
     background-color: #f3f4f6;
-}
-
-.search-container form,
-.search-container {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.search-container #searchInput,
-.search-container #categorySearchInput {
-    flex: 1;
 }
 
 .search-results-banner {

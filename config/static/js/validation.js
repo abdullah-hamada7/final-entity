@@ -148,7 +148,7 @@
 
   function bindSearchForm(form, inputSelector) {
     bindForm(form, (searchForm) => {
-      const search = searchForm.querySelector(inputSelector || 'input[name="search"]');
+      const search = searchForm.querySelector(inputSelector || 'input[name="search"], .search-input');
       let msg = validateSearchQuery(search?.value);
       if (msg) return fail(search, msg);
       if (search) search.value = String(search.value).trim();

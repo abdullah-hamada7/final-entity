@@ -9,6 +9,14 @@ PRODUCTS_PER_PAGE = 12
 FILTER_CATEGORIES_LIMIT = 3
 
 
+def active_products_queryset():
+    return (
+        Product.objects.filter(is_active=True)
+        .select_related('category', 'brand')
+        .prefetch_related('images')
+    )
+
+
 def paginate_queryset(request, queryset):
     paginator = Paginator(queryset, PRODUCTS_PER_PAGE)
     page_number = request.GET.get('page', 1)
@@ -32,7 +40,7 @@ def home(request):
 def products_list(request):
     categories = Category.objects.filter(is_active=True)
     filter_categories = categories.order_by('order', 'name')[:FILTER_CATEGORIES_LIMIT]
-    products = Product.objects.filter(is_active=True)
+    products = active_products_queryset()
 
     search_query = request.GET.get('search', '').strip()
     category_filter = request.GET.get('category', '').strip()
@@ -88,7 +96,7 @@ def product_detail(request, slug):
 def category_products(request, slug):
     """Display products by category"""
     category = get_object_or_404(Category, slug=slug, is_active=True)
-    products = Product.objects.filter(category=category, is_active=True)
+    products = active_products_queryset().filter(category=category)
 
     search_query = request.GET.get('search', '').strip()
     if search_query:
@@ -118,8 +126,22 @@ def add_review(request, product_id):
 
     if request.method == 'POST':
         product = get_object_or_404(Product, id=product_id)
-        rating = request.POST.get('rating')
-        comment = request.POST.get('comment')
+        rating_raw = request.POST.get('rating')
+        comment = (request.POST.get('comment') or '').strip()
+
+        try:
+            rating = int(rating_raw)
+        except (TypeError, ValueError):
+            messages.error(request, 'التقييم غير صالح')
+            return redirect('products:detail', slug=product.slug)
+
+        if rating < 1 or rating > 5:
+            messages.error(request, 'التقييم يجب أن يكون بين 1 و 5')
+            return redirect('products:detail', slug=product.slug)
+
+        if len(comment) < 3:
+            messages.error(request, 'التعليق قصير جدًا')
+            return redirect('products:detail', slug=product.slug)
 
         Review.objects.update_or_create(
             product=product,

@@ -17,11 +17,27 @@
     return `${base}?next=${next}`;
   }
 
+  function notify(message, type = 'info', duration) {
+    if (window.EntityNotify?.show) {
+      window.EntityNotify.show(message, type, duration);
+      return;
+    }
+    const fallback = document.createElement('div');
+    fallback.className = 'app-toast app-toast--error show';
+    fallback.setAttribute('role', 'alert');
+    fallback.textContent = message;
+    document.body.appendChild(fallback);
+    setTimeout(() => fallback.remove(), 3000);
+  }
+
   function redirectToLogin(message) {
     if (message) {
-      alert(message);
+      notify(message, 'warning');
     }
-    window.location.href = getLoginUrl();
+    const delay = message ? 1200 : 0;
+    setTimeout(() => {
+      window.location.href = getLoginUrl();
+    }, delay);
   }
 
   function getCsrfToken() {
@@ -121,35 +137,11 @@
   }
 
   function showCartNotification(message = 'تم إضافة المنتج للسلة') {
-    const notification = document.createElement('div');
-    notification.className = 'cart-notification';
-    notification.innerHTML = `
-      <i class="fas fa-check-circle"></i>
-      <span>${message}</span>
-    `;
-    document.body.appendChild(notification);
-
-    setTimeout(() => notification.classList.add('show'), 60);
-    setTimeout(() => {
-      notification.classList.remove('show');
-      setTimeout(() => notification.remove(), 250);
-    }, 2500);
+    notify(message, 'success', 2500);
   }
 
   function showOrderSuccess() {
-    const notification = document.createElement('div');
-    notification.className = 'cart-notification';
-    notification.innerHTML = `
-      <i class="fas fa-check-circle"></i>
-      <span>تم استلام طلبك وسوف يتم التواصل معك قريبًا</span>
-    `;
-    document.body.appendChild(notification);
-
-    setTimeout(() => notification.classList.add('show'), 60);
-    setTimeout(() => {
-      notification.classList.remove('show');
-      setTimeout(() => notification.remove(), 250);
-    }, 3000);
+    notify('تم استلام طلبك وسوف يتم التواصل معك قريبًا', 'success', 3000);
   }
 
   function addToCart(name, price, icon, productId) {
@@ -235,7 +227,7 @@
 
   function checkout() {
     if (!cart.length) {
-      alert('عربة المشتريات فارغة');
+      notify('عربة المشتريات فارغة', 'warning');
       return;
     }
 
