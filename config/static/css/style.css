@@ -136,6 +136,12 @@ body {
     color: white;
 }
 
+.hero #title {
+    color: var(--secondary-color);
+    background: #ffffff;
+    background-color: #ffffff;
+}
+
 .nav-links {
     display: flex;
     list-style: none;
