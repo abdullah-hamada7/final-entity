@@ -25,6 +25,43 @@ class Category(models.Model):
             self.slug = slugify(self.name, allow_unicode=True)
         super().save(*args, **kwargs)
 
+    @property
+    def display_icon(self):
+        """Return a valid Font Awesome class, with slug/name fallbacks."""
+        slug_icons = {
+            'surgical-equipment': 'fas fa-scissors',
+            'care-devices': 'fas fa-heart-pulse',
+            'medical-care': 'fas fa-heart-pulse',
+            'medical-devices': 'fas fa-stethoscope',
+            'medical-supplies': 'fas fa-medkit',
+            'endoscopy': 'fas fa-stethoscope',
+        }
+
+        raw = (self.icon or '').strip()
+        if raw and 'fa-' in raw:
+            parts = raw.split()
+            if len(parts) == 1 and parts[0].startswith('fa-'):
+                return f'fas {parts[0]}'
+            if len(parts) >= 2 and parts[0] in ('fas', 'far', 'fab', 'fa'):
+                return raw
+            if len(parts) == 1:
+                return f'fas fa-{parts[0].lstrip("fa-")}'
+
+        if self.slug in slug_icons:
+            return slug_icons[self.slug]
+
+        name = self.name or ''
+        if 'جراح' in name:
+            return 'fas fa-scissors'
+        if 'رعاية' in name:
+            return 'fas fa-heart-pulse'
+        if 'منظار' in name or 'مناظير' in name:
+            return 'fas fa-stethoscope'
+        if 'مستلزم' in name:
+            return 'fas fa-medkit'
+
+        return 'fas fa-folder'
+
 class SubCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='subcategories')
     name = models.CharField(max_length=200, verbose_name='اسم الفئة الفرعية')

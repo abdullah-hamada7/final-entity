@@ -233,7 +233,7 @@
                     <h4>الأقسام</h4>
                     <ul class="footer-links">
                         {% for cat in nav_categories %}
-                        <li><a href="{% url 'products:category' slug=cat.slug %}"><i class="{{ cat.icon }}"></i> {{ cat.name }}</a></li>
+                        <li><a href="{% url 'products:category' slug=cat.slug %}"><i class="{{ cat.display_icon }}"></i> {{ cat.name }}</a></li>
                         {% empty %}
                         <li><a href="{% url 'products:home' %}"><i class="fas fa-box-open"></i> جميع المنتجات</a></li>
                         {% endfor %}

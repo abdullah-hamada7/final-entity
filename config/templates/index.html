@@ -58,7 +58,7 @@
                 {% for category in categories %}
                 <a href="{% url 'products:category' slug=category.slug %}" class="shortcut-card">
                     <div class="shortcut-icon">
-                        <i class="{{ category.icon|default:'fas fa-folder' }}"></i>
+                        <i class="{{ category.display_icon }}"></i>
                     </div>
                     <h3>{{ category.name }}</h3>
                     <p>{{ category.description|default:"استكشف الفئة"|truncatewords:12 }}</p>
