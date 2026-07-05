@@ -3,8 +3,9 @@
 /* تحسينات إضافية للصفحة الرئيسية */
 .hero {
     background: url('../images/image-1.png') center/cover no-repeat;
-    background-attachment: fixed;
+    background-attachment: scroll;
     position: relative;
+    z-index: 0;
     overflow: hidden;
     min-height: 100vh;
     width: 100%;

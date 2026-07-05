@@ -21,6 +21,11 @@ urlpatterns = [
     path("contact/", include("contact.urls")),
     path("", RedirectView.as_view(url="/", permanent=False), name="index"),
     path("about/", TemplateView.as_view(template_name="about.html"), name="about"),
+    path(
+        "surgical-equipment/",
+        RedirectView.as_view(url="/products/category/surgical-equipment/", permanent=False),
+        name="surgical-equipment",
+    ),
 ]
 
 

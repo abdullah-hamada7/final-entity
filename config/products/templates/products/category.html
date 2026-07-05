@@ -3,6 +3,10 @@
 
 {% block title %}منتجات - {{ category.name }}{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/products.css' %}">
+{% endblock %}
+
 {% block content %}
 <style>
     .search-btn {
