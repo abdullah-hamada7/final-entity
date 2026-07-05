@@ -176,7 +176,6 @@
       previousFocus = document.activeElement;
       cartModal.classList.add('active');
       document.body.classList.add('cart-open');
-      prefillCheckoutFields();
       const closeBtn = cartModal.querySelector('.close-cart');
       closeBtn?.focus();
     } else {
