@@ -50,7 +50,7 @@
 
 .hero h1 {
     font-size: 5rem;
-    color: var(--secondary-color);
+    color: #000;
     margin-bottom: 1.5rem;
     font-weight: 900;
     background: #ffffffff;
@@ -68,7 +68,7 @@
 
 
 .hero #title {
-    color: inherit;
+    color: #000;
     font-weight: 900;
     background: none;
     -webkit-background-clip: unset;
@@ -79,119 +79,41 @@
     filter: none;
 }
 
-/* Isolate special-i styles into media queries to allow independent scaling */
-
-@media (min-width: 1200px) {
-    .hero #title .special-i {
-        position: relative;
-        display: inline-block;
-        transform: scaleX(2);
-        margin: 0 10px;
-    }
-
-    .hero #title .special-i::before {
-        content: '';
-        position: absolute;
-        top: 36px;
-        left: calc(50% - 1.24375px);
-        transform: translateX(-50%);
-        width: 0;
-        height: 0;
-        border-left: 9.8px solid transparent;
-        border-right: 9.8px solid transparent;
-        border-top: 23px solid #ffffffff;
-        z-index: 1;
-    }
-
-    .hero #title .special-i::after {
-        z-index: 2;
-        content: '';
-        position: absolute;
-        top: 36px;
-        left: calc(50% - 1.24375px);
-        transform: translateX(-50%);
-        width: 0;
-        height: 0;
-        border-left: 8px solid transparent;
-        border-right: 8px solid transparent;
-        border-top: 18.5px solid black;
-    }
+/* Arrow on the "i" in Entity — scales with title font-size (matches desktop on all breakpoints) */
+.hero #title .special-i {
+    position: relative;
+    display: inline-block;
+    transform: scaleX(2);
+    margin: 0 0.125em;
+    color: #000;
 }
 
-@media (min-width: 769px) and (max-width: 1199px) {
-
-    /* خصائص الـ i للتابلت (Tablet) - Shifted Left */
-    .hero #title .special-i {
-        position: relative;
-        display: inline-block;
-        transform: scaleX(2);
-        margin: 0 7px;
-    }
-
-    .hero #title .special-i::before {
-        content: '';
-        position: absolute;
-        top: 19px;
-        left: calc(50% - 0.85px);
-        /* Shifted Left */
-        transform: translateX(-50%);
-        border-left: 6.4px solid transparent;
-        border-right: 6.4px solid transparent;
-        border-top: 15.5px solid #ffffffff;
-        z-index: 1;
-    }
-
-    .hero #title .special-i::after {
-        z-index: 2;
-        content: '';
-        position: absolute;
-        top: 20px;
-        left: calc(50% - 0.85px);
-        /* Shifted Left */
-        transform: translateX(-50%);
-        border-left: 5px solid transparent;
-        border-right: 5px solid transparent;
-        border-top: 12px solid black;
-    }
+.hero #title .special-i::before {
+    content: '';
+    position: absolute;
+    top: 0.45em;
+    left: calc(50% - 0.0155em);
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 0.1225em solid transparent;
+    border-right: 0.1225em solid transparent;
+    border-top: 0.2875em solid #fff;
+    z-index: 1;
 }
 
-@media (max-width: 768px) {
-
-    /* خصائص الـ i للموبايل (Mobile) */
-    .hero #title .special-i {
-        position: relative;
-        display: inline-block;
-        transform: scaleX(2);
-        margin: 0 4px;
-        /* Tight margin */
-    }
-
-    .hero #title .special-i::before {
-        content: '';
-        position: absolute;
-        top: 13px;
-        /* Adjusted Top */
-        left: calc(50% - 0.7px);
-        transform: translateX(-50%);
-        border-left: 3.5px solid transparent;
-        /* Width */
-        border-right: 3.5px solid transparent;
-        border-top: 8px solid #ffffffff;
-        /* Height */
-        z-index: 1;
-    }
-
-    .hero #title .special-i::after {
-        z-index: 2;
-        content: '';
-        position: absolute;
-        top: 13px;
-        left: calc(50% - 0.7px);
-        transform: translateX(-50%);
-        border-left: 2.8px solid transparent;
-        border-right: 2.8px solid transparent;
-        border-top: 6.5px solid black;
-    }
+.hero #title .special-i::after {
+    z-index: 2;
+    content: '';
+    position: absolute;
+    top: 0.45em;
+    left: calc(50% - 0.0155em);
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 0.1em solid transparent;
+    border-right: 0.1em solid transparent;
+    border-top: 0.23125em solid #000;
 }
 
 .hero p {

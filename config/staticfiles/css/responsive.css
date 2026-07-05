@@ -448,19 +448,6 @@ body.menu-open {
         margin-bottom: 1.5rem;
     }
 
-    /* Phone Specific Logo Styles (Separate from Tablet) */
-    .hero #title .special-i {
-        transform: scaleX(2) !important;
-        margin-left: 0.2em !important;
-        margin-right: 0.12em !important;
-    }
-
-    .hero #title .special-i::before,
-    .hero #title .special-i::after {
-        left: calc(50% - 0.04em) !important;
-        transform: translateX(-50%) !important;
-    }
-
     .cta-button {
         padding: 0.9rem 1.8rem;
         font-size: 1rem;
