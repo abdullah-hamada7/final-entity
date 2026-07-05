@@ -254,13 +254,22 @@ class OrderListAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        orders = Order.objects.filter(user=request.user).order_by('-created_at')
-        serializer = OrderSerializer(orders, many=True)
-
-        return Response({
-            'success': True,
-            'orders': serializer.data
-        })
+        try:
+            orders = (
+                Order.objects.filter(user=request.user)
+                .prefetch_related('items')
+                .order_by('-created_at')
+            )
+            serializer = OrderSerializer(orders, many=True)
+            return Response({
+                'success': True,
+                'orders': serializer.data
+            })
+        except Exception as e:
+            return Response({
+                'success': False,
+                'message': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class OrderDetailAPIView(APIView):

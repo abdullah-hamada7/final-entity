@@ -410,6 +410,10 @@
     color: var(--text-muted, #64748b);
 }
 
+.orders-loading[hidden] {
+    display: none !important;
+}
+
 .orders-loading i {
     font-size: 1.5rem;
     color: var(--secondary-color);

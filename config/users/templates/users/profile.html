@@ -7,9 +7,7 @@
 <link rel="stylesheet" href="{% static 'css/profile.css' %}">
 {% endblock %}
 
-{% block extra_js %}
-<script src="{% static 'js/profile.js' %}" defer></script>
-{% endblock %}
+{% block extra_js %}{% endblock %}
 
 {% block content %}
 
@@ -98,7 +96,7 @@
                         <div class="box-header">
                             <h2><i class="fas fa-history"></i> سجل الطلبات</h2>
                         </div>
-                        <div id="profileOrdersPanel">
+                        <div id="profileOrdersPanel" data-orders-api="{% url 'orders:api_order_list' %}">
                             <div id="profileOrdersLoading" class="orders-loading">
                                 <i class="fas fa-spinner fa-spin"></i>
                                 <p>جاري تحميل الطلبات...</p>
@@ -171,5 +169,6 @@ function switchTab(tabName, btn) {
     document.getElementById('tab-' + tabName).classList.add('active');
 }
 </script>
+<script src="{% static 'js/profile.js' %}"></script>
 
 {% endblock %}

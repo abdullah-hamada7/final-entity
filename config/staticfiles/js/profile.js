@@ -2,13 +2,14 @@
 (function () {
   'use strict';
 
-  const ORDERS_API = '/orders/api/orders/';
+  function getOrdersApiUrl() {
+    const panel = document.getElementById('profileOrdersPanel');
+    return panel?.dataset.ordersApi || '/orders/api/orders/';
+  }
 
-  function getCsrfToken() {
-    const meta = document.querySelector('meta[name="csrf-token"]');
-    if (meta) return meta.getAttribute('content') || '';
-    const match = document.cookie.match(/csrftoken=([^;]+)/);
-    return match ? decodeURIComponent(match[1]) : '';
+  function hideLoading() {
+    const loadingEl = document.getElementById('profileOrdersLoading');
+    if (loadingEl) loadingEl.hidden = true;
   }
 
   function formatMoney(value) {
@@ -53,10 +54,12 @@
   function renderOrders(orders) {
     const listEl = document.getElementById('profileOrdersList');
     const emptyEl = document.getElementById('profileOrdersEmpty');
-    const loadingEl = document.getElementById('profileOrdersLoading');
+    const errorEl = document.getElementById('profileOrdersError');
     const statOrders = document.getElementById('statOrders');
 
-    if (loadingEl) loadingEl.hidden = true;
+    hideLoading();
+
+    if (errorEl) errorEl.hidden = true;
 
     if (statOrders) {
       statOrders.textContent = String(Array.isArray(orders) ? orders.length : 0);
@@ -98,9 +101,14 @@
   }
 
   function showOrdersError(message) {
-    const loadingEl = document.getElementById('profileOrdersLoading');
+    const emptyEl = document.getElementById('profileOrdersEmpty');
+    const listEl = document.getElementById('profileOrdersList');
     const errorEl = document.getElementById('profileOrdersError');
-    if (loadingEl) loadingEl.hidden = true;
+
+    hideLoading();
+
+    if (listEl) listEl.hidden = true;
+    if (emptyEl) emptyEl.hidden = true;
     if (errorEl) {
       errorEl.hidden = false;
       const msg = errorEl.querySelector('[data-orders-error]');
@@ -112,13 +120,17 @@
     const panel = document.getElementById('profileOrdersPanel');
     if (!panel) return;
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     try {
-      const response = await fetch(ORDERS_API, {
+      const response = await fetch(getOrdersApiUrl(), {
         method: 'GET',
         credentials: 'same-origin',
         headers: {
-          'X-CSRFToken': getCsrfToken(),
+          Accept: 'application/json',
         },
+        signal: controller.signal,
       });
 
       const data = await response.json().catch(() => ({}));
@@ -128,19 +140,32 @@
         return;
       }
 
-      if (!response.ok || !data.success) {
+      if (!response.ok || data.success !== true) {
         showOrdersError(data.message || 'تعذر تحميل الطلبات');
         return;
       }
 
       renderOrders(data.orders || []);
-    } catch (_e) {
-      showOrdersError('تعذر تحميل الطلبات');
+    } catch (err) {
+      if (err?.name === 'AbortError') {
+        showOrdersError('انتهت مهلة تحميل الطلبات');
+      } else {
+        showOrdersError('تعذر تحميل الطلبات');
+      }
+    } finally {
+      clearTimeout(timeoutId);
+      hideLoading();
     }
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
+  function initProfilePage() {
     initProfileStats();
     loadProfileOrders();
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initProfilePage);
+  } else {
+    initProfilePage();
+  }
 })();
