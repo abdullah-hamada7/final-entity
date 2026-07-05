@@ -50,7 +50,7 @@
 
 .hero h1 {
     font-size: 5rem;
-    color: #000;
+    color: var(--secondary-color);
     margin-bottom: 1.5rem;
     font-weight: 900;
     background: #ffffffff;
@@ -68,7 +68,7 @@
 
 
 .hero #title {
-    color: #000;
+    color: var(--secondary-color);
     font-weight: 900;
     background: none;
     -webkit-background-clip: unset;
@@ -85,7 +85,7 @@
     display: inline-block;
     transform: scaleX(2);
     margin: 0 0.125em;
-    color: #000;
+    color: var(--secondary-color);
 }
 
 .hero #title .special-i::before {

@@ -412,8 +412,15 @@
 }
 
 .offers-empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    width: 100%;
+    margin: 0 auto;
     text-align: center;
     padding: 3rem 1rem;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
+    font-weight: 600;
     color: var(--text-color);
 }
