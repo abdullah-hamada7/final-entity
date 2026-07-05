@@ -9,7 +9,7 @@
 
 {% block content %}
 
-<main class="auth-section profile-section">
+<section class="auth-section profile-section">
     <div class="container">
         <!-- Header -->
         <div class="profile-header-premium">
@@ -48,13 +48,13 @@
                 </div>
 
                 <div class="profile-menu">
-                    <button class="menu-item active" onclick="switchTab('orders')">
+                    <button type="button" class="menu-item active" onclick="switchTab('orders', this)">
                         <i class="fas fa-box-open"></i> طلباتي
                     </button>
-                    <button class="menu-item" onclick="switchTab('settings')">
+                    <button type="button" class="menu-item" onclick="switchTab('settings', this)">
                         <i class="fas fa-user-cog"></i> إعدادات الحساب
                     </button>
-                    <button class="menu-item" onclick="switchTab('support')">
+                    <button type="button" class="menu-item" onclick="switchTab('support', this)">
                         <i class="fas fa-headset"></i> الدعم الفني
                     </button>
                 </div>
@@ -145,15 +145,13 @@
             </div>
         </div>
     </div>
-</main>
+</section>
 
 <script>
-function switchTab(tabName) {
-    // Updated active menu item
-    document.querySelectorAll('.menu-item').forEach(btn => btn.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+function switchTab(tabName, btn) {
+    document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+    if (btn) btn.classList.add('active');
 
-    // Show tab content
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
     document.getElementById('tab-' + tabName).classList.add('active');
 }

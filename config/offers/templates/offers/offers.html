@@ -72,7 +72,7 @@
                     </div>
 
                     {% if offer.products.count > 4 %}
-                        <p style="font-size: 0.9rem; color:#666;">
+                        <p class="offer-more-products">
                             + {{ offer.products.count|add:"-4" }} منتجات أخرى
                         </p>
                     {% endif %}
@@ -90,7 +90,7 @@
             {% endfor %}
         </div>
         {% else %}
-            <p style="text-align:center;">لا توجد عروض حالياً</p>
+            <p class="offers-empty-state">لا توجد عروض حالياً</p>
         {% endif %}
 
     </div>

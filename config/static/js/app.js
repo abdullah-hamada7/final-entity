@@ -27,7 +27,13 @@
   }
 
   function setupRevealOnScroll() {
-    if (!('IntersectionObserver' in window)) return;
+    document.documentElement.classList.add('js-reveal');
+
+    if (!('IntersectionObserver' in window)) {
+      qsa('.feature-card, .product-card, .service-card, .offer-card, .value-item, .shortcut-card')
+        .forEach((el) => el.classList.add('visible'));
+      return;
+    }
 
     const els = qsa('.feature-card, .product-card, .service-card, .offer-card, .value-item, .shortcut-card');
     if (!els.length) return;
@@ -89,26 +95,23 @@
     if (body) body.classList.remove('menu-open');
 
     if (hamburger && mobileMenu) {
+      const setMenuOpen = (open) => {
+        hamburger.classList.toggle('active', open);
+        mobileMenu.classList.toggle('active', open);
+        body.classList.toggle('menu-open', open);
+        hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      };
+
       hamburger.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        mobileMenu.classList.toggle('active');
-        body.classList.toggle('menu-open');
+        setMenuOpen(!mobileMenu.classList.contains('active'));
       });
 
       mobileMenuLinks.forEach(link => {
-        link.addEventListener('click', () => {
-          hamburger.classList.remove('active');
-          mobileMenu.classList.remove('active');
-          body.classList.remove('menu-open');
-        });
+        link.addEventListener('click', () => setMenuOpen(false));
       });
 
       mobileMenu.addEventListener('click', (e) => {
-        if (e.target === mobileMenu) {
-          hamburger.classList.remove('active');
-          mobileMenu.classList.remove('active');
-          body.classList.remove('menu-open');
-        }
+        if (e.target === mobileMenu) setMenuOpen(false);
       });
     }
 
@@ -117,6 +120,7 @@
         if (hamburger) hamburger.classList.remove('active');
         if (mobileMenu) mobileMenu.classList.remove('active');
         if (body) body.classList.remove('menu-open');
+        if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
       }
     });
   }
@@ -143,42 +147,7 @@
     btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
   }
 
-  function renderAccountNav() {
-    const nav = document.querySelector('.nav-links');
-    if (!nav) return;
-  
-    let li = document.querySelector('#accountMenu');
-    if (li) li.remove();
-  
-    li = document.createElement('li');
-    li.id = 'accountMenu';
-    li.className = 'account-dropdown';
-  
-    // ✅ Django هو اللي بيحدد الحالة مش JS
-    const isAuthenticated = document.body.dataset.auth === "true";
-  
-    if (isAuthenticated) {
-      li.innerHTML = `
-        <a class="account-link" href="/users/profile/"><i class="fas fa-user-circle"></i> حسابي</a>
-        <div class="account-dropdown-menu">
-          <a href="/users/profile/"><i class="fas fa-id-card"></i> الملف الشخصي</a>
-          <a href="/users/logout/"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
-        </div>
-      `;
-    } else {
-      li.innerHTML = `
-        <a class="account-link" href="/users/login/"><i class="fas fa-user"></i> دخول / تسجيل</a>
-        <div class="account-dropdown-menu">
-          <a href="/users/login/"><i class="fas fa-right-to-bracket"></i> تسجيل الدخول</a>
-          <a href="/users/register/"><i class="fas fa-user-plus"></i> إنشاء حساب</a>
-        </div>
-      `;
-    }
-  
-    const cartLi = nav.querySelector('.cart-icon-container');
-    nav.insertBefore(li, cartLi); // يحطها قبل سلة المشتريات
-      }
-  function setupProductsDetailsToggles() {
+  function setupBackToTop() {
     // products.html only: show/hide section details
     const showButtons = qsa('[data-show-details]');
     const hideButtons = qsa('[data-hide-details]');
@@ -306,10 +275,6 @@
     setupProductsDetailsToggles();
     setupCategoriesSearchModule();
 
-    // Auth UI
-    renderAccountNav();
-
-    // Favorites (Product Details Page Only)
     setupFavorites();
   });
 
@@ -328,52 +293,34 @@
       // Prevent dupes
       if (!qs('.favorite-btn', mainImageContainer)) {
         const btn = document.createElement('button');
+        btn.type = 'button';
         btn.className = 'favorite-btn';
         btn.setAttribute('aria-label', 'أضف للمفضلة');
-
-        // Random count generation (50-300)
-        let count = Math.floor(Math.random() * 250) + 50;
+        btn.setAttribute('aria-pressed', favorites.includes(name) ? 'true' : 'false');
 
         const isFav = favorites.includes(name);
-        if (isFav) {
-          btn.classList.add('active');
-          count++; // Include user's like if active
-        }
+        if (isFav) btn.classList.add('active');
 
-        btn.innerHTML = `
-            <i class="${isFav ? 'fas' : 'far'} fa-heart"></i>
-            <span class="like-count">${count}</span>
-        `;
-
-        btn.onclick = (e) => window.toggleFavorite(btn, name);
+        btn.innerHTML = `<i class="${isFav ? 'fas' : 'far'} fa-heart" aria-hidden="true"></i>`;
+        btn.addEventListener('click', (e) => window.toggleFavorite(e, btn, name));
         mainImageContainer.appendChild(btn);
       }
     }
 
-    // Expose toggle function globally
-    window.toggleFavorite = function (btn, productName) {
-      if (event) {
-        event.preventDefault();
-        event.stopPropagation();
+    window.toggleFavorite = function (e, btn, productName) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
       }
 
       const icon = btn.querySelector('i');
-      const countSpan = btn.querySelector('.like-count');
       const isActive = btn.classList.toggle('active');
-      let currentCount = parseInt(countSpan.textContent);
+      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
 
-      // Toggle Icon Style
-      if (isActive) {
-        icon.className = 'fas fa-heart'; // Solid
-        currentCount++;
-      } else {
-        icon.className = 'far fa-heart'; // Regular
-        currentCount--;
+      if (icon) {
+        icon.className = isActive ? 'fas fa-heart' : 'far fa-heart';
       }
 
-      countSpan.textContent = currentCount;
-
-      // Update Storage
       let favs = JSON.parse(localStorage.getItem('userFavorites') || '[]');
 
       if (isActive) {

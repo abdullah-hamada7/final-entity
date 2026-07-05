@@ -52,12 +52,20 @@ def category_products(request, slug):
     """Display products by category"""
     category = get_object_or_404(Category, slug=slug, is_active=True)
     products = Product.objects.filter(category=category, is_active=True)
-    
+
+    search_query = request.GET.get('search', '')
+    if search_query:
+        products = products.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+
     context = {
         'category': category,
         'products': products,
+        'search_query': search_query,
     }
-    
+
     return render(request, 'products/category.html', context)
 
 def add_review(request, product_id):

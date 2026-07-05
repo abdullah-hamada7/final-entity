@@ -95,11 +95,10 @@
 
                 {% if product.features.exists %}
                 <div class="product-features">
-                    <div class="product-features">
                     <h3>المميزات الرئيسية</h3>
                     <ul class="features-list">
                         {% for feature in product.features.all %}
-                        <li style="color:#000; font-size:16px;">
+                        <li>
                             <i class="fas fa-check"></i>
                             {{ feature }}
                         </li>
@@ -119,8 +118,8 @@
                         استفسار سريع
                     </a>
 
-                    <button class="add-to-cart-btn"
-                            onclick="addToCart('{{ product.name }}', {{ product.price }}, {{ product.id }})">
+                    <button type="button" class="add-to-cart-btn"
+                            onclick="addToCart('{{ product.name|escapejs }}', {{ product.final_price }}, '{{ product.icon|escapejs }}')">
                         <i class="fas fa-cart-plus"></i>
                         أضف إلى السلة
                     </button>

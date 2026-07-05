@@ -5,6 +5,14 @@
   'use strict';
 
   let cart = [];
+  let previousFocus = null;
+
+  function getCsrfToken() {
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    if (meta) return meta.getAttribute('content') || '';
+    const match = document.cookie.match(/csrftoken=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : '';
+  }
 
   function loadCart() {
     try {
@@ -59,10 +67,10 @@
                 <p class="item-price">${money(price)} جنيه</p>
               </div>
               <div class="item-controls">
-                <button type="button" onclick="updateQuantity('${safeName}', ${qty - 1})" class="qty-btn">-</button>
+                <button type="button" onclick="updateQuantity('${safeName}', ${qty - 1})" class="qty-btn" aria-label="تقليل الكمية">-</button>
                 <span class="qty">${qty}</span>
-                <button type="button" onclick="updateQuantity('${safeName}', ${qty + 1})" class="qty-btn">+</button>
-                <button type="button" onclick="removeFromCart('${safeName}')" class="remove-btn">
+                <button type="button" onclick="updateQuantity('${safeName}', ${qty + 1})" class="qty-btn" aria-label="زيادة الكمية">+</button>
+                <button type="button" onclick="removeFromCart('${safeName}')" class="remove-btn" aria-label="حذف المنتج">
                   <i class="fas fa-trash"></i>
                 </button>
               </div>
@@ -121,7 +129,7 @@
       cart.push({
         name,
         price: Number(price) || 0,
-        icon: icon || 'fas fa-box',
+        icon: (typeof icon === 'string' && icon) ? icon : 'fas fa-box',
         quantity: 1
       });
     }
@@ -155,10 +163,28 @@
     updateCartUI();
   }
 
-  function toggleCart() {
+  function toggleCart(forceOpen) {
     const cartModal = document.getElementById('cartModal');
     if (!cartModal) return;
-    cartModal.classList.toggle('active');
+
+    const shouldOpen = typeof forceOpen === 'boolean'
+      ? forceOpen
+      : !cartModal.classList.contains('active');
+
+    if (shouldOpen) {
+      previousFocus = document.activeElement;
+      cartModal.classList.add('active');
+      document.body.classList.add('cart-open');
+      const closeBtn = cartModal.querySelector('.close-cart');
+      closeBtn?.focus();
+    } else {
+      cartModal.classList.remove('active');
+      document.body.classList.remove('cart-open');
+      if (previousFocus && typeof previousFocus.focus === 'function') {
+        previousFocus.focus();
+      }
+      previousFocus = null;
+    }
   }
 
   function checkout() {
@@ -167,11 +193,18 @@
       return;
     }
 
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    const csrfToken = getCsrfToken();
+    if (csrfToken) {
+      headers["X-CSRFToken"] = csrfToken;
+    }
+
     fetch("/orders/submit-cart/", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
+      credentials: "same-origin",
       body: JSON.stringify({
         items: cart
       })
@@ -180,8 +213,10 @@
     .then(data => {
       if (data.success) {
         clearCart();
-        toggleCart();
+        toggleCart(false);
         showOrderSuccess();
+      } else {
+        alert(data.message || "حدث خطأ أثناء إرسال الطلب");
       }
     })
     .catch(() => {
@@ -226,9 +261,30 @@
       saveCart();
       updateCartUI();
       showCartNotification(`تم إضافة ${addedCount} منتج للسلة بنجاح!`);
-      setTimeout(() => toggleCart(), 500);
+      setTimeout(() => toggleCart(true), 500);
     } else {
       alert('جميع المنتجات موجودة بالفعل في السلة');
+    }
+  }
+
+  function trapCartFocus(e) {
+    const cartModal = document.getElementById('cartModal');
+    if (!cartModal || !cartModal.classList.contains('active') || e.key !== 'Tab') return;
+
+    const focusable = cartModal.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusable.length) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
     }
   }
 
@@ -238,7 +294,15 @@
 
     document.addEventListener('click', (e) => {
       const cartModal = document.getElementById('cartModal');
-      if (cartModal && e.target === cartModal) toggleCart();
+      if (cartModal && e.target === cartModal) toggleCart(false);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      const cartModal = document.getElementById('cartModal');
+      if (e.key === 'Escape' && cartModal?.classList.contains('active')) {
+        toggleCart(false);
+      }
+      trapCartFocus(e);
     });
   });
 

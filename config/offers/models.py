@@ -52,4 +52,18 @@ class OfferProduct(models.Model):
         unique_together = ('offer', 'product')
     
     def __str__(self):
-         return str(self.product)
+        return str(self.product)
+
+    def get_offer_price(self):
+        from decimal import Decimal
+        price = Decimal(self.product.price)
+        if self.offer.offer_type == 'percentage':
+            discount = price * (self.offer.discount_value / Decimal('100'))
+        else:
+            discount = self.offer.discount_value
+        return max(price - discount, Decimal('0'))
+
+    @property
+    def savings_amount(self):
+        from decimal import Decimal
+        return max(Decimal(self.product.price) - self.get_offer_price(), Decimal('0'))

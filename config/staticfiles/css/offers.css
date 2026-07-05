@@ -397,3 +397,15 @@
         gap: 0.5rem;
     }
 }
+
+.offer-more-products {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.offers-empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    font-size: 1.2rem;
+    color: var(--text-color);
+}

@@ -82,29 +82,27 @@ body.menu-open {
 .mobile-menu-content {
     position: fixed;
     top: 0;
-    left: -320px;
+    right: -320px;
     width: 300px;
     max-width: 85vw;
     height: 100vh;
     background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
-    /* Light Blue Theme */
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    box-shadow: 4px 0 30px rgba(0, 0, 0, 0.4);
+    box-shadow: -4px 0 30px rgba(0, 0, 0, 0.4);
     padding: 2rem 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
     overflow-y: auto;
     overflow-x: visible;
-    /* Allow cart badge to pop out */
-    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1002;
-    border-right: 1px solid rgba(255, 255, 255, 0.4);
+    border-left: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .mobile-menu.active .mobile-menu-content {
-    left: 0;
+    right: 0;
 }
 
 /* Links Styling - Light Theme Update */
@@ -142,7 +140,7 @@ body.menu-open {
     background: white;
     border-color: #1B9BD8;
     color: #1B9BD8;
-    transform: translateX(5px);
+    transform: translateX(-5px);
     box-shadow: 0 8px 15px rgba(27, 155, 216, 0.15);
 }
 
