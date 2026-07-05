@@ -27,7 +27,7 @@ class Category(models.Model):
 
     @property
     def display_icon(self):
-        """Return a valid Font Awesome class, with slug/name fallbacks."""
+        """Return a Font Awesome 6-compatible icon class."""
         slug_icons = {
             'surgical-equipment': 'fas fa-scissors',
             'care-devices': 'fas fa-heart-pulse',
@@ -37,20 +37,17 @@ class Category(models.Model):
             'endoscopy': 'fas fa-stethoscope',
         }
 
-        raw = (self.icon or '').strip()
-        if raw and 'fa-' in raw:
-            parts = raw.split()
-            if len(parts) == 1 and parts[0].startswith('fa-'):
-                return f'fas {parts[0]}'
-            if len(parts) >= 2 and parts[0] in ('fas', 'far', 'fab', 'fa'):
-                return raw
-            if len(parts) == 1:
-                return f'fas fa-{parts[0].lstrip("fa-")}'
-
-        if self.slug in slug_icons:
-            return slug_icons[self.slug]
+        legacy_map = {
+            'fa-cut': 'fa-scissors',
+            'fa-heartbeat': 'fa-heart-pulse',
+            'fa-user-md': 'fa-user-doctor',
+            'fa-tools': 'fa-scissors',
+        }
 
         name = self.name or ''
+        slug = (self.slug or '').strip()
+
+        # Name/slug first — DB may contain FA5 classes that do not render in FA6
         if 'جراح' in name:
             return 'fas fa-scissors'
         if 'رعاية' in name:
@@ -59,6 +56,23 @@ class Category(models.Model):
             return 'fas fa-stethoscope'
         if 'مستلزم' in name:
             return 'fas fa-medkit'
+        if slug in slug_icons:
+            return slug_icons[slug]
+
+        raw = (self.icon or '').strip()
+        if not raw:
+            return 'fas fa-folder'
+
+        for old, new in legacy_map.items():
+            raw = raw.replace(old, new)
+
+        parts = raw.split()
+        if len(parts) == 1 and parts[0].startswith('fa-'):
+            return f'fas {parts[0]}'
+        if len(parts) >= 2 and parts[0] in ('fas', 'far', 'fab', 'fa'):
+            return raw
+        if len(parts) == 1:
+            return f'fas fa-{parts[0].lstrip("fa-")}'
 
         return 'fas fa-folder'
 
