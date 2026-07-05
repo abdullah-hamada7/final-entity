@@ -110,7 +110,16 @@
   }
 
   async function syncCartFromServer() {
-    const { ok, data } = await apiRequest(API.cart, 'GET');
+    if (!isLoggedIn()) {
+      cart = [];
+      return false;
+    }
+
+    const { ok, status, data } = await apiRequest(API.cart, 'GET');
+    if (status === 401 || status === 403) {
+      cart = [];
+      return false;
+    }
     if (ok && data.success && data.cart) {
       applyCartPayload(data.cart);
       return true;
@@ -120,6 +129,7 @@
   }
 
   async function migrateLocalStorageCart() {
+    if (!isLoggedIn()) return;
     let saved = null;
     try {
       saved = localStorage.getItem('medicalCart');
@@ -154,6 +164,12 @@
     localStorage.removeItem('medicalCart');
   }
 
+  function requireLoginForCart(message) {
+    if (isLoggedIn()) return true;
+    redirectToLogin(message || 'يجب تسجيل الدخول لاستخدام السلة');
+    return false;
+  }
+
   function updateCheckoutButton() {
     const btn = document.getElementById('cartCheckoutBtn');
     const notice = document.getElementById('cartLoginNotice');
@@ -165,19 +181,6 @@
     if (notice) {
       notice.hidden = loggedIn;
     }
-  }
-
-  function getCheckoutDetails() {
-    const body = document.body;
-    const validation = window.EntityValidation;
-
-    return {
-      full_name: body.dataset.userName || '',
-      phone: validation ? validation.normalizePhone(body.dataset.userPhone) : (body.dataset.userPhone || ''),
-      email: body.dataset.userEmail || '',
-      address: '',
-      notes: '',
-    };
   }
 
   function updateCartUI() {
@@ -255,6 +258,8 @@
   }
 
   async function addToCart(name, price, icon, productId, offerId) {
+    if (!requireLoginForCart('يجب تسجيل الدخول لإضافة منتجات للسلة')) return;
+
     const id = parseInt(productId, 10);
     if (!Number.isFinite(id)) {
       notify('لا يمكن إضافة هذا المنتج', 'error');
@@ -280,6 +285,8 @@
   }
 
   async function removeFromCart(cartItemId) {
+    if (!requireLoginForCart()) return;
+
     const { ok, data } = await apiRequest(API.remove, 'DELETE', { item_id: cartItemId });
 
     if (ok && data.success && data.cart) {
@@ -292,6 +299,8 @@
   }
 
   async function updateQuantity(cartItemId, newQty) {
+    if (!requireLoginForCart()) return;
+
     const qty = Number(newQty) || 0;
 
     const { ok, data } = await apiRequest(API.update, 'PUT', {
@@ -309,6 +318,8 @@
   }
 
   async function clearCart() {
+    if (!requireLoginForCart()) return;
+
     const { ok, data } = await apiRequest(API.clear, 'POST');
 
     if (ok && data.success) {
@@ -346,18 +357,14 @@
   }
 
   async function checkout() {
+    if (!requireLoginForCart('يجب تسجيل الدخول لإتمام الطلب')) return;
+
     if (!cart.length) {
       notify('عربة المشتريات فارغة', 'warning');
       return;
     }
 
-    if (!isLoggedIn()) {
-      redirectToLogin('يجب تسجيل الدخول لإتمام الطلب');
-      return;
-    }
-
-    const details = getCheckoutDetails();
-    const { ok, status, data } = await apiRequest(API.checkout, 'POST', details);
+    const { ok, status, data } = await apiRequest(API.checkout, 'POST', {});
 
     if (status === 401 || status === 403) {
       redirectToLogin('يجب تسجيل الدخول لإتمام الطلب');
@@ -375,10 +382,12 @@
       return;
     }
 
-    notify(data.message || 'حدث خطأ أثناء إرسال الطلب', 'error');
+    notify(extractApiError(data, 'حدث خطأ أثناء إرسال الطلب'), 'error');
   }
 
   async function addAllToCart() {
+    if (!requireLoginForCart('يجب تسجيل الدخول لإضافة منتجات للسلة')) return;
+
     const productCards = document.querySelectorAll('.offer-detail-section .product-card');
     if (!productCards.length) {
       notify('لا توجد منتجات لإضافتها', 'warning');

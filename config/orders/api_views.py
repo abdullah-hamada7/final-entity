@@ -2,35 +2,21 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-from .models import Cart, CartItem, Order, OrderItem
+from .models import CartItem, Order, OrderItem
 from products.models import Product
 from .pricing import get_product_unit_price, resolve_cart_item_unit_price
+from .utils import get_or_create_cart, build_order_fields_from_user
 from .serializers import (
     CartSerializer, AddToCartSerializer, UpdateCartQuantitySerializer,
     RemoveFromCartSerializer, OrderSerializer, CreateOrderSerializer
 )
 
 
-def get_or_create_cart(request):
-    """دالة مساعدة للحصول على السلة أو إنشائها"""
-    if request.user.is_authenticated:
-        cart, created = Cart.objects.get_or_create(user=request.user)
-    else:
-        session_key = request.session.session_key
-        if not session_key:
-            request.session.create()
-            session_key = request.session.session_key
-        cart, created = Cart.objects.get_or_create(session_key=session_key)
-    return cart
-
-
 class CartAPIView(APIView):
-    """
-    GET: عرض السلة
-    """
-    permission_classes = [AllowAny]
+    """GET: عرض السلة"""
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         cart = get_or_create_cart(request)
@@ -40,9 +26,10 @@ class CartAPIView(APIView):
             'cart': serializer.data
         })
 
+
 class AddToCartAPIView(APIView):
     """POST: إضافة منتج للسلة"""
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         serializer = AddToCartSerializer(data=request.data)
@@ -74,7 +61,7 @@ class AddToCartAPIView(APIView):
                 cart_item.save()
 
             cart_serializer = CartSerializer(cart)
-            
+
             return Response({
                 'success': True,
                 'message': 'تم إضافة المنتج للسلة',
@@ -86,16 +73,15 @@ class AddToCartAPIView(APIView):
                 'success': False,
                 'message': str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
+
+
 class UpdateCartQuantityAPIView(APIView):
-    """
-    PUT: تحديث كمية منتج في السلة
-    """
-    permission_classes = [AllowAny]
+    """PUT: تحديث كمية منتج في السلة"""
+    permission_classes = [IsAuthenticated]
 
     def put(self, request):
         serializer = UpdateCartQuantitySerializer(data=request.data)
-        
+
         if not serializer.is_valid():
             return Response({
                 'success': False,
@@ -134,14 +120,12 @@ class UpdateCartQuantityAPIView(APIView):
 
 
 class RemoveFromCartAPIView(APIView):
-    """
-    DELETE: حذف منتج من السلة
-    """
-    permission_classes = [AllowAny]
+    """DELETE: حذف منتج من السلة"""
+    permission_classes = [IsAuthenticated]
 
     def delete(self, request):
         serializer = RemoveFromCartSerializer(data=request.data)
-        
+
         if not serializer.is_valid():
             return Response({
                 'success': False,
@@ -170,10 +154,8 @@ class RemoveFromCartAPIView(APIView):
 
 
 class ClearCartAPIView(APIView):
-    """
-    POST: تفريغ السلة
-    """
-    permission_classes = [AllowAny]
+    """POST: تفريغ السلة"""
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         try:
@@ -195,18 +177,26 @@ class ClearCartAPIView(APIView):
 
 
 class CreateOrderAPIView(APIView):
-    """
-    POST: إنشاء طلب من السلة (يتطلب تسجيل الدخول)
-    """
+    """POST: إنشاء طلب من السلة"""
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         serializer = CreateOrderSerializer(data=request.data)
 
         if not serializer.is_valid():
+            errors = serializer.errors
+            first_error = None
+            for value in errors.values():
+                if isinstance(value, list) and value:
+                    first_error = value[0]
+                    break
+                if isinstance(value, str):
+                    first_error = value
+                    break
             return Response({
                 'success': False,
-                'errors': serializer.errors
+                'message': first_error or 'بيانات الطلب غير صالحة',
+                'errors': errors
             }, status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -218,20 +208,16 @@ class CreateOrderAPIView(APIView):
                     'message': 'السلة فارغة'
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-            data = serializer.validated_data
             user = request.user
-            full_name = (data.get('full_name') or '').strip() or user.full_name
-            phone = (data.get('phone') or '').strip() or user.phone
-            email = (data.get('email') or '').strip() or (user.email or '')
+            order_fields = build_order_fields_from_user(
+                user,
+                serializer.validated_data.get('notes', ''),
+            )
 
             order = Order.objects.create(
                 user=user,
-                full_name=full_name,
-                phone=phone,
-                email=email,
-                address=data.get('address', '') or '',
-                notes=data.get('notes', '') or '',
-                total_amount=cart.total_price
+                total_amount=cart.total_price,
+                **order_fields,
             )
 
             for cart_item in cart.items.select_related('product'):
@@ -264,15 +250,13 @@ class CreateOrderAPIView(APIView):
 
 
 class OrderListAPIView(APIView):
-    """
-    GET: عرض طلبات المستخدم
-    """
+    """GET: عرض طلبات المستخدم"""
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         orders = Order.objects.filter(user=request.user).order_by('-created_at')
         serializer = OrderSerializer(orders, many=True)
-        
+
         return Response({
             'success': True,
             'orders': serializer.data
@@ -280,15 +264,13 @@ class OrderListAPIView(APIView):
 
 
 class OrderDetailAPIView(APIView):
-    """
-    GET: عرض تفاصيل طلب معين
-    """
+    """GET: عرض تفاصيل طلب معين"""
     permission_classes = [IsAuthenticated]
 
     def get(self, request, order_number):
         order = get_object_or_404(Order, order_number=order_number, user=request.user)
         serializer = OrderSerializer(order)
-        
+
         return Response({
             'success': True,
             'order': serializer.data

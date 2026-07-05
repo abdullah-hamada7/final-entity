@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from django.http import JsonResponse
 from django.db.models import Q, F, Avg
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Category, Product, Review
@@ -135,7 +136,14 @@ def category_products(request, slug):
 
 def add_review(request, product_id):
     """Add review to a product"""
+    wants_json = 'application/json' in request.headers.get('Accept', '')
+
     if not request.user.is_authenticated:
+        if wants_json:
+            return JsonResponse(
+                {'success': False, 'message': 'يجب تسجيل الدخول لإضافة تقييم'},
+                status=401,
+            )
         messages.error(request, 'يجب تسجيل الدخول لإضافة تقييم')
         return redirect('users:login')
 
@@ -147,18 +155,26 @@ def add_review(request, product_id):
         try:
             rating = int(rating_raw)
         except (TypeError, ValueError):
+            if wants_json:
+                return JsonResponse({'success': False, 'message': 'التقييم غير صالح'}, status=400)
             messages.error(request, 'التقييم غير صالح')
             return redirect('products:detail', slug=product.slug)
 
         if rating < 1 or rating > 5:
+            if wants_json:
+                return JsonResponse({'success': False, 'message': 'التقييم يجب أن يكون بين 1 و 5'}, status=400)
             messages.error(request, 'التقييم يجب أن يكون بين 1 و 5')
             return redirect('products:detail', slug=product.slug)
 
         if len(comment) < 3:
+            if wants_json:
+                return JsonResponse({'success': False, 'message': 'التعليق قصير جدًا'}, status=400)
             messages.error(request, 'التعليق قصير جدًا')
             return redirect('products:detail', slug=product.slug)
 
         if len(comment) > 1000:
+            if wants_json:
+                return JsonResponse({'success': False, 'message': 'التعليق طويل جدًا'}, status=400)
             messages.error(request, 'التعليق طويل جدًا')
             return redirect('products:detail', slug=product.slug)
 
@@ -167,6 +183,9 @@ def add_review(request, product_id):
             user=request.user,
             defaults={'rating': rating, 'comment': comment}
         )
+
+        if wants_json:
+            return JsonResponse({'success': True, 'message': 'تم إرسال التقييم بنجاح'})
 
         messages.success(request, 'تم إضافة التقييم بنجاح')
         return redirect('products:detail', slug=product.slug)

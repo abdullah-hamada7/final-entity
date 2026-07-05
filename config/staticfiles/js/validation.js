@@ -246,19 +246,70 @@
   }
 
   function setupReviewForm() {
-    bindForm(document.getElementById('reviewForm'), (form) => {
+    const form = document.getElementById('reviewForm');
+    if (!form) return;
+
+    bindLiveClear(form);
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearFormErrors(form);
+
       const comment = form.querySelector('#reviewComment');
       let msg = validateReviewRating(form);
       if (msg) {
         const group = form.querySelector('#reviewRatingGroup');
-        return fail(group, msg);
+        showError(group, msg);
+        return;
       }
       msg = validateMessage(comment?.value, 3);
-      if (msg) return fail(comment, msg);
-      if (String(comment?.value || '').trim().length > 1000) {
-        return fail(comment, 'التعليق طويل جدًا');
+      if (msg) {
+        showError(comment, msg);
+        comment?.focus();
+        return;
       }
-      return true;
+      if (String(comment?.value || '').trim().length > 1000) {
+        showError(comment, 'التعليق طويل جدًا');
+        comment?.focus();
+        return;
+      }
+
+      const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+      const submitBtn = form.querySelector('[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          credentials: 'same-origin',
+          headers: {
+            Accept: 'application/json',
+            'X-CSRFToken': csrfToken,
+          },
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.ok && data.success) {
+          form.reset();
+          clearFormErrors(form);
+          if (global.EntityNotify?.show) {
+            global.EntityNotify.show(data.message || 'تم إرسال التقييم بنجاح', 'success');
+          }
+          return;
+        }
+
+        const errorMessage = data.message || 'تعذر إرسال التقييم';
+        if (global.EntityNotify?.show) {
+          global.EntityNotify.show(errorMessage, 'error');
+        }
+      } catch (_err) {
+        if (global.EntityNotify?.show) {
+          global.EntityNotify.show('تعذر إرسال التقييم', 'error');
+        }
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
     });
   }
 

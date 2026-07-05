@@ -9,7 +9,7 @@ from products.models import Category, Product
 from .models import Offer, OfferProduct
 from .utils import build_offers_query
 import json
-from orders.models import Cart, CartItem
+from orders.models import CartItem
 from orders.pricing import get_product_unit_price, resolve_cart_item_unit_price
 
 OFFERS_PER_PAGE = 9
@@ -83,6 +83,7 @@ def offer_detail(request, offer_id):
     return render(request, 'offers/offer_detail.html', context)
 
 
+@login_required
 @require_POST
 def apply_offer_to_cart(request):
     try:
@@ -93,14 +94,8 @@ def apply_offer_to_cart(request):
         if not offer.is_valid():
             return JsonResponse({'success': False, 'message': 'العرض غير متاح'}, status=400)
 
-        if request.user.is_authenticated:
-            cart, _ = Cart.objects.get_or_create(user=request.user)
-        else:
-            session_key = request.session.session_key
-            if not session_key:
-                request.session.create()
-                session_key = request.session.session_key
-            cart, _ = Cart.objects.get_or_create(session_key=session_key)
+        from orders.utils import get_or_create_cart
+        cart = get_or_create_cart(request)
 
         offer_products = OfferProduct.objects.filter(offer=offer).select_related('product')
         added_products = []

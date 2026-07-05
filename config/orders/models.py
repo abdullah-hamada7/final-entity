@@ -13,8 +13,7 @@ class Cart(models.Model):
         ('ordered', 'تم الطلب'),
     ]
 
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
-    session_key = models.CharField(max_length=40, null=True, blank=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='carts')
 
     status = models.CharField(
         max_length=20,
@@ -31,9 +30,7 @@ class Cart(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        if self.user:
-            return f"سلة {self.user.full_name}"
-        return f"سلة جلسة {self.session_key}"
+        return f"سلة {self.user.full_name}"
 
     @property
     def total_price(self):
@@ -90,7 +87,7 @@ class Order(models.Model):
         ('cancelled', 'ملغي'),
     ]
 
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True, related_name='orders')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='orders')
     order_number = models.CharField(max_length=20, unique=True, verbose_name='رقم الطلب')
     full_name = models.CharField(max_length=255, verbose_name='الاسم الكامل')
     phone = models.CharField(max_length=15, verbose_name='رقم الهاتف')
@@ -109,9 +106,7 @@ class Order(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        if self.user:
-            return f"طلب #{self.order_number} - {self.user.full_name}"
-        return f"طلب #{self.order_number} - {self.full_name}"
+        return f"طلب #{self.order_number} - {self.user.full_name}"
 
     def save(self, *args, **kwargs):
         """توليد رقم الطلب تلقائيًا"""

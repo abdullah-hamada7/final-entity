@@ -96,9 +96,14 @@ class RemoveFromCartSerializer(serializers.Serializer):
 
 class OrderItemSerializer(serializers.ModelSerializer):
     """Serializer لعناصر الطلب"""
+    subtotal = serializers.SerializerMethodField()
+
     class Meta:
         model = OrderItem
         fields = ['id', 'product_name', 'quantity', 'price', 'subtotal']
+
+    def get_subtotal(self, obj):
+        return obj.subtotal
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -117,9 +122,5 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class CreateOrderSerializer(serializers.Serializer):
-    """Serializer لإنشاء طلب جديد"""
-    full_name = serializers.CharField(max_length=100, required=False)
-    phone = serializers.CharField(max_length=20, required=False)
-    email = serializers.EmailField(required=False)
-    address = serializers.CharField(required=False)
-    notes = serializers.CharField(required=False, allow_blank=True)
+    """Serializer لإنشاء طلب جديد — ملاحظات اختيارية فقط."""
+    notes = serializers.CharField(required=False, allow_blank=True, max_length=2000)

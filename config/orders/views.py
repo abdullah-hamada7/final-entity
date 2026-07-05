@@ -3,28 +3,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from django.urls import reverse
-from urllib.parse import quote
 from .models import Cart, CartItem, Order, OrderItem
 from products.models import Product
 from .pricing import get_product_unit_price, resolve_cart_item_unit_price
+from .utils import get_or_create_cart, build_order_fields_from_user
 import json
-from django.contrib.auth import get_user_model
 from offers.models import Offer, OfferProduct
 
 
-def get_or_create_cart(request):
-    if request.user.is_authenticated:
-        cart, created = Cart.objects.get_or_create(user=request.user)
-    else:
-        session_key = request.session.session_key
-        if not session_key:
-            request.session.create()
-            session_key = request.session.session_key
-        cart, created = Cart.objects.get_or_create(session_key=session_key)
-    return cart
-
-
+@login_required
 @require_POST
 def add_to_cart(request):
     try:
@@ -58,6 +45,7 @@ def add_to_cart(request):
         return JsonResponse({'success': False, 'message': str(e)}, status=400)
 
 
+@login_required
 @require_POST
 def remove_from_cart(request):
     try:
@@ -77,6 +65,7 @@ def remove_from_cart(request):
         return JsonResponse({'success': False, 'message': str(e)}, status=400)
 
 
+@login_required
 @require_POST
 def update_cart_quantity(request):
     try:
@@ -102,6 +91,7 @@ def update_cart_quantity(request):
         return JsonResponse({'success': False, 'message': str(e)}, status=400)
 
 
+@login_required
 @require_POST
 def clear_cart(request):
     try:
@@ -117,6 +107,7 @@ def clear_cart(request):
         return JsonResponse({'success': False, 'message': str(e)}, status=400)
 
 
+@login_required
 def cart_view(request):
     cart = get_or_create_cart(request)
     context = {'cart': cart}
@@ -132,14 +123,14 @@ def checkout(request):
         return redirect('products:list')
 
     if request.method == 'POST':
+        order_fields = build_order_fields_from_user(
+            request.user,
+            request.POST.get('notes', ''),
+        )
         order = Order.objects.create(
             user=request.user,
-            full_name=request.POST.get('full_name', request.user.full_name),
-            phone=request.POST.get('phone', request.user.phone),
-            email=request.POST.get('email', request.user.email or ''),
-            address=request.POST.get('address', ''),
-            notes=request.POST.get('notes', ''),
-            total_amount=cart.total_price
+            total_amount=cart.total_price,
+            **order_fields,
         )
 
         for cart_item in cart.items.all():
@@ -180,6 +171,7 @@ def order_detail(request, order_number):
 
 
 
+@login_required
 def add_all_offer_products(request, offer_id):
     if request.method == "POST":
         offer = get_object_or_404(Offer, id=offer_id, is_active=True)
@@ -216,6 +208,7 @@ def add_all_offer_products(request, offer_id):
             "products": added_products
         })
         
+@login_required
 def cart_api(request):
     """Return cart JSON (items, totals). GET only."""
     cart = get_or_create_cart(request)
@@ -252,15 +245,14 @@ def api_create_order(request):
         if not cart.items.exists():
             return JsonResponse({'success': False, 'message': 'السلة فارغة'}, status=400)
 
-        # Create order
+        order_fields = build_order_fields_from_user(
+            request.user,
+            request.POST.get('notes', ''),
+        )
         order = Order.objects.create(
             user=request.user,
-            full_name=request.POST.get('full_name', request.user.full_name),
-            phone=request.POST.get('phone', request.user.phone),
-            email=request.POST.get('email', request.user.email or ''),
-            address=request.POST.get('address', ''),
-            notes=request.POST.get('notes', ''),
-            total_amount=cart.total_price
+            total_amount=cart.total_price,
+            **order_fields,
         )
 
         for cart_item in cart.items.all():
@@ -288,45 +280,23 @@ def api_create_order(request):
     
 
 
+@login_required
 @require_POST
 def submit_cart(request):
-    if not request.user.is_authenticated:
-        next_path = request.META.get('HTTP_REFERER', '/')
-        login_url = f"{reverse('users:login')}?next={quote(next_path, safe='')}"
-        return JsonResponse({
-            "success": False,
-            "login_required": True,
-            "message": "يجب تسجيل الدخول لإتمام الطلب",
-            "login_url": login_url,
-        }, status=401)
-
     try:
-        data = json.loads(request.body)
+        data = json.loads(request.body or '{}')
         db_cart = get_or_create_cart(request)
         user = request.user
 
         if not db_cart.items.exists():
             return JsonResponse({"success": False, "message": "السلة فارغة"}, status=400)
 
-        full_name = (data.get("full_name") or "").strip() or user.full_name
-        phone = (data.get("phone") or "").strip() or user.phone
-        email = (data.get("email") or "").strip() or (user.email or "")
-        address = (data.get("address") or "").strip()
-        notes = (data.get("notes") or "").strip()
-
-        if not full_name:
-            return JsonResponse({"success": False, "message": "الاسم الكامل مطلوب"}, status=400)
-        if not phone:
-            return JsonResponse({"success": False, "message": "رقم الهاتف مطلوب"}, status=400)
+        order_fields = build_order_fields_from_user(user, data.get('notes', ''))
 
         order = Order.objects.create(
             user=user,
-            full_name=full_name,
-            phone=phone,
-            email=email,
-            address=address,
-            notes=notes,
             total_amount=db_cart.total_price,
+            **order_fields,
         )
 
         for cart_item in db_cart.items.select_related('product'):
